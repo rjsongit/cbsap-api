@@ -4,6 +4,6 @@
     {
         Task<bool> InsertInvInfoRoutingLevelWithInvoiceAsync(long invoiceID, long invRoutingFlowLevelID);
 
-        Task<bool> UpdateInvInfoRoutingLevelStatusAsync(long invRoutingFlowLevelID, int invFlowStatus);
+        Task<bool> UpdateInvInfoRoutingLevelStatusAsync(long invRoutingFlowLevelID, int? invFlowStatus);
     }
 }

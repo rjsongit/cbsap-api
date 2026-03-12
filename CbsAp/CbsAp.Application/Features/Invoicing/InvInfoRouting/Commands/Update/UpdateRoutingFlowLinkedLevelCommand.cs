@@ -4,7 +4,7 @@ using CbsAp.Domain.Enums;
 
 namespace CbsAp.Application.Features.Invoicing.InvInfoRouting.Commands.Update
 {
-    public record UpdateRoutingFlowLinkedLevelCommand(long invInfoRoutingLevelID, int invFlowStatus, string UpdateBy)
+    public record UpdateRoutingFlowLinkedLevelCommand(long invInfoRoutingLevelID, int? invFlowStatus, string UpdateBy)
         : ICommand<ResponseResult<bool>>
     {
     }

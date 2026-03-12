@@ -1,4 +1,6 @@
-﻿namespace CbsAp.Application.DTOs.Invoicing.InvInfoRoutingLevel
+﻿using CbsAp.Domain.Enums;
+
+namespace CbsAp.Application.DTOs.Invoicing.InvInfoRoutingLevel
 {
     public class InvInfoRoutingLevelDto
     {
@@ -15,5 +17,7 @@
         public long RoleID { get; set; }
 
         public int Level { get; set; }
+
+        public int? InvFlowStatus { get; set; }
     }
 }

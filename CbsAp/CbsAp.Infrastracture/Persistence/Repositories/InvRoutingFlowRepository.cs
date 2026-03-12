@@ -96,7 +96,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 RoleID = dto.RoleID,
                 KeywordID = dto.KeywordID,
                 SupplierInfoID = dto.SupplierInfoID,
-                
+                InvFlowStatus = dto.InvFlowStatus,
             });
 
             return  await dto.ToListAsync(cancellationToken);

@@ -20,7 +20,7 @@ namespace CbsAp.API.Controllers.v1
             _mediator = mediator;
         }
 
-        [HttpPost("create-routing")]
+        [HttpPost("assign-routing")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]

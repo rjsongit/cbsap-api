@@ -30,7 +30,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             return rowAffected > 0;
         }
 
-        public async Task<bool> UpdateInvInfoRoutingLevelStatusAsync(long invRoutingFlowLevelID, int invFlowStatus)
+        public async Task<bool> UpdateInvInfoRoutingLevelStatusAsync(long invRoutingFlowLevelID, int? invFlowStatus)
         {
             var rowAffected = 0;
 

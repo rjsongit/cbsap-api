@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using CbsAp.Application.Configurations.constants;
+using CbsAp.Application.DTOs.Invoicing.InvInfoRoutingLevel;
 using CbsAp.Application.DTOs.Invoicing.Invoice;
 using CbsAp.Application.Features.Invoicing.InvActions.Command;
 using CbsAp.Application.Features.Invoicing.InvActions.Command.AddComment;
@@ -25,13 +26,12 @@ using CbsAp.Application.Features.Invoicing.InvAllocationLine.Queries;
 using CbsAp.Application.Features.Invoicing.InvAttachments.Command.Upload;
 using CbsAp.Application.Features.Invoicing.InvAttachments.Queries.Download;
 using CbsAp.Application.Features.Invoicing.InvAttachments.Queries.GetAttachments;
+using CbsAp.Application.Features.Invoicing.InvInfoRouting.Commands.Update;
 using CbsAp.Application.Features.Invoicing.InvInfoRouting.Queries;
 using CbsAp.Application.Features.Invoicing.InvoiceImage;
 using CbsAp.Application.Features.Invoicing.Reports;
-using CbsAp.Application.Shared.ResultPatten;
 using CbsAp.Domain.Enums;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -390,9 +390,82 @@ namespace CbsAp.API.Controllers.v1
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> SubmitInvoice([FromBody] InvoiceDto dto)
         {
-            var updateInvoiceCommand =
-               new SubmitCommand(dto, this.CurrentUser);
+            var updateInvoiceCommand = new SubmitCommand(dto, this.CurrentUser);
+            var getRoutingFlowLinkedLevel = new GetRoutingFlowLinkedLevelQuery(dto.InvoiceID, dto.SupplierInfoID, dto.KeywordID);
             var result = await _mediator.Send(updateInvoiceCommand);
+            var routings = await _mediator.Send(getRoutingFlowLinkedLevel);
+            InvInfoRoutingLevelDto? prevRoute = null;
+
+            foreach (var route in routings.ResponseData)
+            {
+                // skip if already submitted
+                if (route.InvFlowStatus is (int)InvFlowStatus.Submitted)
+                    continue;
+
+                // initialize setting status on [Level 1]: pending > assigned > submitted
+                if (route.Level is 1)
+                {
+                    if (route.InvFlowStatus is null)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Pending, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                    }
+                    else if (route.InvFlowStatus is (int)InvFlowStatus.Pending)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Assigned, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Assigned;
+                        continue;
+                    }
+                    else if (route.InvFlowStatus is (int)InvFlowStatus.Assigned)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Submitted, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Submitted;
+                        continue;
+                    }
+                }
+
+                // continue to other levels
+                if (prevRoute != null)
+                {
+                    if (prevRoute.InvFlowStatus is (int)InvFlowStatus.Assigned)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Pending, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Pending;
+                    }
+                    else if (prevRoute.InvFlowStatus is (int)InvFlowStatus.Submitted)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Assigned, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Assigned;
+                    }
+                }
+                else if (route.Level > 1)
+                {
+                    if (route.InvFlowStatus is (int)InvFlowStatus.Pending)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Assigned, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Assigned;
+                        continue;
+                    }
+                    else if (route.InvFlowStatus is (int)InvFlowStatus.Assigned)
+                    {
+                        var param = new UpdateRoutingFlowLinkedLevelCommand(route.InvInfoRoutingLevelID, (int)InvFlowStatus.Submitted, this.CurrentUser);
+                        var response = await _mediator.Send(param);
+                        prevRoute = route;
+                        prevRoute.InvFlowStatus = (int)InvFlowStatus.Submitted;
+                        continue;
+                    }
+                }
+            }
 
             return CreateResponse(result);
         }
