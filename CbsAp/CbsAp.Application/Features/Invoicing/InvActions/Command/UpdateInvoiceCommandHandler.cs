@@ -4,6 +4,7 @@ using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
 using CbsAp.Domain.Entities.Invoicing;
 using CbsAp.Domain.Entities.RoleManagement;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 namespace CbsAp.Application.Features.Invoicing.InvActions.Command
@@ -106,30 +107,19 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command
                !exisitngInvRoutingFlowLevel.Any(e => i.InvInfoRoutingLevelID == i.InvInfoRoutingLevelID!))
                .ToList();
 
-
             var routingLevelsToUpdate = mapIncomingInvRoutingFlowLevels
                .Where(i => i.InvInfoRoutingLevelID != 0 &&
                exisitngInvRoutingFlowLevel.Any(e => e.InvInfoRoutingLevelID == i.InvInfoRoutingLevelID))
                .ToList();
-
-
 
             var incomingInvInfoRoutingLevelIds = mapIncomingInvRoutingFlowLevels
                 .Where(i => i.InvInfoRoutingLevelID != 0)
                 .Select(i => i.InvInfoRoutingLevelID)
                 .ToHashSet();
 
-
             var invInfoRoutingLevelToDelete = exisitngInvRoutingFlowLevel
                .Where(i => !incomingInvInfoRoutingLevelIds.Contains(i.InvInfoRoutingLevelID))
                .ToList();
-
-            // invoice allocation
-            //disable the implementation; change the saving and adding of line items "inline"
-          
-            //UpdateItems(existingInvAllocationLine, itemsToUpdate, request.UpdatedBy);
-            //AddItems(invoice, itemstoAdd, request.UpdatedBy);
-            //DeleteItems(itemsToDelete);
 
             RoutingLevelsUpdateItems(exisitngInvRoutingFlowLevel, routingLevelsToUpdate);
             RoutingLevelsAddItems(invoice, routingLevelsToAdd);
@@ -146,85 +136,40 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command
             return ResponseResult<bool>.OK("Invoice updated successfully.");
         }
 
-        private static void UpdateItems(List<InvAllocLine> existingAllocLines,
-            List<InvAllocLine> updatedLines,
-            string updatedBy)
-        {
-            foreach (var updated in updatedLines)
-            {
-                var existing = existingAllocLines
-                    .First(e => e.InvAllocLineID == updated.InvAllocLineID);
-
-                existing.InvoiceID = updated.InvoiceID;
-                existing.LineNo = updated.LineNo;
-                existing.PoNo = updated.PoNo;
-                existing.PoLineNo = updated.PoLineNo;
-                existing.LineDescription = updated.LineDescription;
-                existing.Qty = updated.Qty;
-                existing.LineNetAmount = updated.LineNetAmount;
-                existing.LineTaxAmount = updated.LineTaxAmount;
-                existing.LineAmount = updated.LineAmount;
-                existing.Note = updated.Note;
-                existing.TaxCodeID = updated.TaxCodeID;
-                existing.AccountID = updated.AccountID;
-                existing.SetAuditFieldsOnUpdate(updatedBy);
-            }
-        }
-
         private static void RoutingLevelsUpdateItems(List<InvInfoRoutingLevel> existingRoutingLevel,
-        List<InvInfoRoutingLevel> updatedRoutingLevel
-       )
+        List<InvInfoRoutingLevel> updatedRoutingLevel)
         {
-            foreach (var updated in updatedRoutingLevel)
+            try
             {
-                var existing = existingRoutingLevel
-                    .First(e => e.InvInfoRoutingLevelID == updated.InvInfoRoutingLevelID);
-
-                existing.InvoiceID = updated.InvoiceID;
-                existing.InvInfoRoutingLevelID = updated.InvInfoRoutingLevelID;
-                existing.InvRoutingFlowID = updated.InvRoutingFlowID == 0 ? null : updated.InvRoutingFlowID;
-                existing.Level = updated.Level;
-                existing.RoleID = updated.RoleID;
-
-            }
-        }
-
-        private static void AddItems(Invoice invoice, List<InvAllocLine> newItems, string createdBy)
-        {
-            foreach (var item in newItems)
-            {
-                invoice.InvoiceAllocationLines!.Add(new InvAllocLine
+                foreach (var updated in updatedRoutingLevel)
                 {
-                    InvoiceID = item.InvoiceID,
-                    LineNo = item.LineNo,
-                    PoNo = item.PoNo,
-                    PoLineNo = item.PoLineNo,
-                    LineDescription = item.LineDescription,
-                    Qty = item.Qty,
-                    LineNetAmount = item.LineNetAmount,
-                    LineTaxAmount = item.LineTaxAmount,
-                    LineAmount = item.LineAmount,
-                    Note = item.Note,
-                    TaxCodeID = item.TaxCodeID,
-                    AccountID = item.AccountID,
-                });
-                invoice.InvoiceAllocationLines!.SetAuditFieldsOnCreate(createdBy);
+                    var existing = existingRoutingLevel.First(e => e.InvInfoRoutingLevelID == updated.InvInfoRoutingLevelID);
+
+                    existing.InvoiceID = updated.InvoiceID;
+                    existing.InvInfoRoutingLevelID = updated.InvInfoRoutingLevelID;
+                    existing.InvRoutingFlowID = updated.InvRoutingFlowID == 0 ? null : updated.InvRoutingFlowID;
+                    existing.Level = updated.Level;
+                    existing.RoleID = updated.RoleID;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 
-        private static void RoutingLevelsAddItems(Invoice invoice, List<InvInfoRoutingLevel> newItems)
+        private static void RoutingLevelsAddItems(Invoice invoice, ICollection<InvInfoRoutingLevel> newItems)
         {
             foreach (var item in newItems)
             {
                 invoice.InvInfoRoutingLevels!.Add(new InvInfoRoutingLevel
                 {
-                    InvoiceID = item.InvoiceID,
-                    //  InvRoutingFlowID = item.InvRoutingFlowID,
+                    InvoiceID = invoice.InvoiceID,
+                    InvRoutingFlowID = invoice.InvRoutingFlowID,
                     Level = item.Level,
                     RoleID = item.RoleID,
-
+                    SupplierInfoID = invoice.SupplierInfoID
                 });
-
             }
         }
 

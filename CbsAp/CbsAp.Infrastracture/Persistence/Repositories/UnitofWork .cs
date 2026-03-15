@@ -13,8 +13,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         private Hashtable? repositories;
         private readonly ApplicationDbContext _dbContext;
 
-        
-
         public UnitofWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;

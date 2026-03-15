@@ -99,7 +99,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 InvFlowStatus = dto.InvFlowStatus,
             });
 
-            return  await dto.ToListAsync(cancellationToken);
+            return  await dto.OrderBy(i => i.Level).ToListAsync(cancellationToken);
         }
 
         public async Task<InvRoutingFlow?> GetInvRoutingFlowByIdAsync(long invRoutingFlowID, CancellationToken cancellationToken)

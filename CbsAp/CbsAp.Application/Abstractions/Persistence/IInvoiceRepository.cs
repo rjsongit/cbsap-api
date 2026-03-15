@@ -105,5 +105,7 @@ namespace CbsAp.Application.Abstractions.Persistence
            InvoiceStatusType? statusType,
            InvoiceQueueType? queueType,
            CancellationToken token);
+
+        Task<bool> UpdateInvoiceRoutingFlowIDAsync(long invoiceID, long invRoutingFlowID);
     }
 }

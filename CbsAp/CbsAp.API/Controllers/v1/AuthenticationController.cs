@@ -37,6 +37,7 @@ namespace CbsAp.API.Controllers.v1
         {
             var authenticateQuery = _mapper.Map<LoginQuery>(request);
             var result = await _mediator.Send(authenticateQuery);
+            var serialize = result.ResponseData.Token.ToString();
             if (result.IsSuccess)
                 return Ok(result);
             return BadRequest(result);

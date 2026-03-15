@@ -11,7 +11,6 @@ using CbsAp.Infrastracture.Contexts;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using System.Reflection.Metadata;
 
 namespace CbsAp.Infrastracture.Persistence.Repositories
 {
@@ -696,6 +695,23 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             var supplierPagination = await dtoQuery.OrderByDynamic(sortField, sortOrder)
                  .ToPaginatedListAsync(pageNumber, pageSize, token);
             return supplierPagination;
+        }
+
+        public async Task<bool> UpdateInvoiceRoutingFlowIDAsync(long invoiceID, long invRoutingFlowID)
+        {
+            var rowAffected = 0;
+
+            try
+            {
+                rowAffected = await _dbcontext.Database.ExecuteSqlInterpolatedAsync
+                ($"EXECUTE dbo.spInvoiceRoutingFlowIdUpdate @InvoiceID={invoiceID}, @InvRoutingFlowID={invRoutingFlowID}");
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return rowAffected > 0;
         }
     }
 }
