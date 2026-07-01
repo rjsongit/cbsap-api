@@ -7,5 +7,7 @@ namespace CbsAp.Application.Abstractions.Persistence
         Task<IEnumerable<Dimension>> GetDimensions(long entityProfileId, string? dimension, string? name, bool? isActive);
 
         IQueryable<Dimension> GetDimensionsAsQueryable();
+
+        Task<IEnumerable<Dimension>> GetDimensionByEntityProfileIDAsync(long entityProfileId, CancellationToken token);
     }
 }

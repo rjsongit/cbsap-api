@@ -18,5 +18,7 @@ namespace CbsAp.Application.Abstractions.Persistence
             CancellationToken token);
 
         IQueryable<Account> GetAccountsAsQueryable();
+
+        Task<IEnumerable<Account>> GetAccountsByEntityProfileIDAsync(long entityProfileID, CancellationToken token);
     }
 }

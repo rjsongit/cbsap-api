@@ -97,5 +97,12 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
              .ToPaginatedListAsync(pageNumber, pageSize, token);
             return accountsPagination;
         }
+
+        public async Task<IEnumerable<Account>> GetAccountsByEntityProfileIDAsync(long entityProfileID, CancellationToken token)
+        {
+            return await _dbcontext.Accounts
+                .Where(a => a.EntityProfileID == entityProfileID)
+                .ToListAsync(token);
+        }
     }
 }

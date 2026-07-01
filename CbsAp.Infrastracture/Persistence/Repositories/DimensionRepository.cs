@@ -29,6 +29,16 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             return dimensions;
         }
 
+        public async Task<IEnumerable<Dimension>> GetDimensionByEntityProfileIDAsync(long entityProfileId, CancellationToken token)
+        {
+            var dimensions = await _dbcontext.Dimensions
+                .AsNoTracking()
+                .Where(d => d.EntityProfileID == entityProfileId)
+                .ToListAsync(token);
+
+            return dimensions;
+        }
+
         public IQueryable<Dimension> GetDimensionsAsQueryable()
         {
             return _dbcontext.Dimensions.AsQueryable();
