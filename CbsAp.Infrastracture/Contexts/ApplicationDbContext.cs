@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 using CbsAp.Application.DTOs.ActivityLog;
 using CbsAp.Domain.Entities.AdvanceSearch;
 using CbsAp.Domain.Entities.DimensionSetup;
+using CbsAp.Domain.Entities.CodingPermissions;
 
 namespace CbsAp.Infrastracture.Contexts
 {
@@ -124,6 +125,8 @@ namespace CbsAp.Infrastracture.Contexts
         public DbSet<ActivityLog> ActivityLogs { get; set; }
 
         public DbSet<AdvanceSearch> AdvanceSearches { get; set; }
+
+        public DbSet<CodingPermissionAssigned> CodingPermission { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

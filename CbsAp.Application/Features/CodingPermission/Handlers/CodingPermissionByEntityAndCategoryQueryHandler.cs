@@ -12,29 +12,61 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IDimensionRepository _dimensionRepository;
+        private readonly ICodingPermissionRepository _codingPermissionRepository;
 
-        public CodingPermissionByEntityAndCategoryQueryHandler(IAccountRepository accountRepository, IDimensionRepository dimensionRepository)
+        public CodingPermissionByEntityAndCategoryQueryHandler(IAccountRepository accountRepository
+            , IDimensionRepository dimensionRepository
+            , ICodingPermissionRepository codingPermissionRepository)
         {
             _accountRepository = accountRepository;
             _dimensionRepository = dimensionRepository;
+            _codingPermissionRepository = codingPermissionRepository;
         }
 
         public async Task<ResponseResult<IEnumerable<CodingPermissionDTO>>> Handle(CodingPermissionByEntityAndCategoryQuery request, CancellationToken cancellationToken)
         {
             var result = new List<CodingPermissionDTO>();
+            var assignedPermissions = await _codingPermissionRepository.GetAllAsync();
+
+            // build a lookup keyed by (EntityProfileID, Category, NameCode)
+            var assignedLookup = assignedPermissions
+                .ToDictionary(ap => (ap.EntityProfileID, ap.Category, ap.NameCode), ap => ap.IsAssigned);
 
             switch (request.CategoryName.ToLower())
             {
                 case "account":
                     var accounts = await _accountRepository.GetAccountsByEntityProfileIDAsync(request.EntityProfileID, cancellationToken);
-                    result = accounts.Select(static i => new CodingPermissionDTO
+                    result = accounts.Select(i =>
                     {
-                        EntityProfileID = i.EntityProfileID,
-                        NameCode = $"{i.AccountID}-{i.AccountName}",
-                        Name = i.AccountName,
-                        Code = i.AccountID.ToString(),
-                        OriginallyAssigned = true, // Set this based on your logic
-                        Checked = true // Set this based on your logic
+                        var nameCode = $"{i.AccountID}-{i.AccountName}";
+                        var key = (i.EntityProfileID, request.CategoryName, nameCode);
+
+                        if (assignedLookup.TryGetValue(key, out var isAssigned))
+                        {
+                            return new CodingPermissionDTO
+                            {
+                                ID = i.AccountID,
+                                EntityProfileID = i.EntityProfileID,
+                                Category = request.CategoryName,
+                                NameCode = nameCode,
+                                Name = i.AccountName,
+                                Code = i.AccountID.ToString(),
+                                OriginallyAssigned = isAssigned, // exists and matches IsAssigned in other table
+                                Checked = isAssigned
+                            };
+                        }
+
+                        return new CodingPermissionDTO
+                        {
+                            ID = i.AccountID,
+                            EntityProfileID = i.EntityProfileID,
+                            Category = request.CategoryName,
+                            NameCode = nameCode,
+                            Name = i.AccountName,
+                            Code = i.AccountID.ToString(),
+                            OriginallyAssigned = false,
+                            Checked = false
+                        };
                     }).ToList();
 
                     return accounts.Any()
@@ -43,14 +75,37 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
 
                 default:
                     var dimensions = await _dimensionRepository.GetDimensionByEntityProfileIDAsync(request.EntityProfileID, cancellationToken);
-                    result = dimensions.Select(i => new CodingPermissionDTO
+                    result = dimensions.Select(i =>
                     {
-                        EntityProfileID = i.EntityProfileID,
-                        NameCode = $"{i.DimensionCode}-{i.Name}",
-                        Name = i.Name,
-                        Code = i.DimensionCode,
-                        OriginallyAssigned = true, // Set this based on your logic
-                        Checked = true // Set this based on your logic
+                        var nameCode = $"{i.DimensionCode}-{i.Name}";
+                        var key = (i.EntityProfileID, request.CategoryName, nameCode);
+
+                        if (assignedLookup.TryGetValue(key, out var isAssigned))
+                        {
+                            return new CodingPermissionDTO
+                            {
+                                ID = i.DimensionID,
+                                EntityProfileID = i.EntityProfileID,
+                                Category = request.CategoryName,
+                                NameCode = nameCode,
+                                Name = i.Name,
+                                Code = i.DimensionCode,
+                                OriginallyAssigned = isAssigned, // exists and matches IsAssigned in other table
+                                Checked = isAssigned
+                            };
+                        }
+
+                        return new CodingPermissionDTO
+                        {
+                            ID = i.DimensionID,
+                            EntityProfileID = i.EntityProfileID,
+                            Category = request.CategoryName,
+                            NameCode = nameCode,
+                            Name = i.Name,
+                            Code = i.DimensionCode,
+                            OriginallyAssigned = false,
+                            Checked = false
+                        };
                     }).ToList();
 
                     return dimensions.Any()
