@@ -57,9 +57,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         public async Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName)
         {
             var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
-            var test = await repo.FindAsync(cp => cp.EntityProfileID == entityProfileID && cp.Category == categoryName);
-
-            return await repo.FindAsync(cp => cp.EntityProfileID == entityProfileID && cp.Category == categoryName);
+            return await repo.FindAsync(i => i.EntityProfileID == entityProfileID && i.Category == categoryName && i.IsAssigned);
         }
-}
+    }
 }
