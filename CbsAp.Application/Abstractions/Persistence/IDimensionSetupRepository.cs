@@ -1,6 +1,6 @@
 ﻿using CbsAp.Application.DTOs.DimensionSetup;
-using CbsAp.Application.DTOs.Entity;
 using CbsAp.Application.Shared;
+using CbsAp.Domain.Entities.DimensionSetup;
 
 namespace CbsAp.Application.Abstractions.Persistence
 {
@@ -15,5 +15,7 @@ namespace CbsAp.Application.Abstractions.Persistence
             string? sortField,
             int? sortOrder,
             CancellationToken token);
+
+        Task<IEnumerable<DimensionSetup>> GetDimensionByActiveAsync(CancellationToken token);
     }
 }

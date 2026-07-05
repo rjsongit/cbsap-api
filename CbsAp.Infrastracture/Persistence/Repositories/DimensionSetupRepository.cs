@@ -3,6 +3,7 @@ using CbsAp.Application.DTOs.DimensionSetup;
 using CbsAp.Application.DTOs.Entity;
 using CbsAp.Application.Shared;
 using CbsAp.Application.Shared.Extensions;
+using CbsAp.Domain.Entities.DimensionSetup;
 using CbsAp.Domain.Entities.Entity;
 using CbsAp.Infrastracture.Contexts;
 using LinqKit;
@@ -63,6 +64,13 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             var entityPagination = await dtoSearchEntity.OrderByDynamic(sortField, sortOrder)
                 .ToPaginatedListAsync(pageNumber, pageSize, token);
             return entityPagination;
+        }
+
+        public async Task<IEnumerable<DimensionSetup>> GetDimensionByActiveAsync(CancellationToken token)
+        {
+            return await _dbcontext.DimensionSetups
+                .Where(d => d.Required == true && d.Show == true)
+                .ToListAsync(token);
         }
     }
 }

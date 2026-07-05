@@ -22,13 +22,13 @@ namespace CbsAp.API.Controllers.v1
         }
 
         [Authorize]
-        [HttpGet("categories/{entityProfileID}")]
+        [HttpGet("categories")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCategoryByEntityID(long entityProfileID)
+        public async Task<IActionResult> GetCodingPermissionCategories()
         {
-            var query = new CodingPermissionCategoryByEntityIDQuery(entityProfileID);
+            var query = new CodingPermissionCategoriesQuery();
             var result = await _mediator.Send(query);
             return CreateResponse(result);
         }
