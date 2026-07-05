@@ -80,5 +80,17 @@ namespace CbsAp.API.Controllers.v1
             var result = await _mediator.Send(query);
             return CreateResponse(result);
         }
+
+        [Authorize]
+        [HttpPost("filter")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCodingPermissionsByEntityCategoryAndNameCode([FromBody] CodingPermissionFilterDTO filter)
+        {
+            var query = new CodingPermissionByEntityCategoryAndNameCodeQuery(filter);
+            var result = await _mediator.Send(query);
+            return CreateResponse(result);
+        }
     }
 }

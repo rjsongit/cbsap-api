@@ -16,9 +16,7 @@ namespace CbsAp.Infrastracture.Extensions
                builder =>
                    builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
                    .EnableSensitiveDataLogging();
-            }
-
-            );
+            });
         }
     }
 }

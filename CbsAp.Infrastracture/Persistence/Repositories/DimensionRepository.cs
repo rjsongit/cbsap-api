@@ -1,4 +1,5 @@
 using CbsAp.Application.Abstractions.Persistence;
+using CbsAp.Application.DTOs.CodingPermission;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Domain.Entities.Dimensions;
 using CbsAp.Infrastracture.Contexts;
@@ -42,6 +43,17 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         public IQueryable<Dimension> GetDimensionsAsQueryable()
         {
             return _dbcontext.Dimensions.AsQueryable();
+        }
+
+        public async Task<IEnumerable<Dimension>> GetDimensionByEntityAndNameCodeAsync(CodingPermissionFilterDTO filter, CancellationToken token)
+        {
+            var dimensions = await _dbcontext.Dimensions
+                .AsNoTracking()
+                .Where(d => d.EntityProfileID == filter.EntityProfileID 
+                    && (d.DimensionCode.Contains(filter.NameCode) || d.Name.Contains(filter.NameCode)))
+                .ToListAsync(token);
+
+            return dimensions;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CbsAp.Application.DTOs.Invoicing.Accounts;
+﻿using CbsAp.Application.DTOs.CodingPermission;
+using CbsAp.Application.DTOs.Invoicing.Accounts;
 using CbsAp.Application.Shared;
 using CbsAp.Domain.Entities.Invoicing;
 
@@ -20,5 +21,7 @@ namespace CbsAp.Application.Abstractions.Persistence
         IQueryable<Account> GetAccountsAsQueryable();
 
         Task<IEnumerable<Account>> GetAccountsByEntityProfileIDAsync(long entityProfileID, CancellationToken token);
+
+        Task<IEnumerable<Account>> GetAccountByEntityAndNameCodeAsync(CodingPermissionFilterDTO filter, CancellationToken token);
     }
 }
