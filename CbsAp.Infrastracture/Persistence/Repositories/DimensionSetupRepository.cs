@@ -69,7 +69,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         public async Task<IEnumerable<DimensionSetup>> GetDimensionByActiveAsync(CancellationToken token)
         {
             return await _dbcontext.DimensionSetups
-                .Where(d => d.Required == true && d.Show == true)
+                .Where(d => d.Show == true)
                 .ToListAsync(token);
         }
     }
