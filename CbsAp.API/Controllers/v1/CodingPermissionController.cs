@@ -64,7 +64,7 @@ namespace CbsAp.API.Controllers.v1
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Assign([FromBody] List<CodingPermissionDTO> codingPermissionDTOs)
         {
-            var command = new SaveCodingPermissionCommand(codingPermissionDTOs);
+            var command = new SaveCodingPermissionCommand(codingPermissionDTOs, this.CurrentUser);
             var result = await _mediator.Send(command);
             return CreateResponse(result);
         }

@@ -7,7 +7,7 @@ namespace CbsAp.Application.Abstractions.Persistence
     {
         Task AddAsync(CodingPermissionAssigned entity, CancellationToken cancellationToken);
 
-        Task AddOrUpdateAsync(CodingPermissionAssigned entity, CancellationToken cancellationToken);
+        Task AddOrUpdateAsync(CodingPermissionAssigned entity, string currentUser, CancellationToken cancellationToken);
 
         Task<IEnumerable<CodingPermissionAssigned>> GetAllAsync();
 

@@ -28,7 +28,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                 {
                     var entity = dto.Adapt<CbsAp.Domain.Entities.CodingPermissions.CodingPermissionAssigned>();
                     entity.IsAssigned = dto.Checked;
-                    await _codingPermissionRepository.AddOrUpdateAsync(entity, cancellationToken);
+                    await _codingPermissionRepository.AddOrUpdateAsync(entity, request.currentUser, cancellationToken);
                 }
             }
             catch (Exception ex)

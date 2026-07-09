@@ -20,7 +20,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             await _unitofWork.SaveChanges(string.Empty, string.Empty, cancellationToken);
         }
 
-        public async Task AddOrUpdateAsync(CodingPermissionAssigned entity, CancellationToken cancellationToken)
+        public async Task AddOrUpdateAsync(CodingPermissionAssigned entity, string currentUser, CancellationToken cancellationToken)
         {
             var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
 
@@ -32,17 +32,17 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             if (existing != null)
             {
                 existing.IsAssigned = entity.IsAssigned;
-                existing.SetAuditFieldsOnUpdate("system");
+                existing.SetAuditFieldsOnUpdate(currentUser);
                 await repo.UpdateAsync(existing.ID, existing);
             }
             else
             {
                 entity.ID = 0;
-                entity.SetAuditFieldsOnCreate("system");
+                entity.SetAuditFieldsOnCreate(currentUser);
                 await repo.AddAsync(entity);
             }
 
-            await _unitofWork.SaveChanges("system", "coding permission", cancellationToken);
+            await _unitofWork.SaveChanges(currentUser, "coding permission", cancellationToken);
         }
 
         public async Task<IEnumerable<CodingPermissionAssigned>> GetAllAsync()
