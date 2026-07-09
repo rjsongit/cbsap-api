@@ -3,7 +3,9 @@
     public class CodingPermissionFilterDTO
     {
         public long EntityProfileID { get; set; }
-        
+
+        public long RoleID { get; set; }
+
         public string Category { get; set; } = string.Empty;
 
         public string NameCode { get; set; } = string.Empty;

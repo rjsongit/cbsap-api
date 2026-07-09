@@ -6,6 +6,8 @@
 
         public long? EntityProfileID { get; set; }
 
+        public long? RoleID { get; set; }
+
         public string? Category { get; set; }
 
         public string? NameCode { get; set; }

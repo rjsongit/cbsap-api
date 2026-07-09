@@ -10,6 +10,8 @@ namespace CbsAp.Domain.Entities.CodingPermissions
 
         public long? EntityProfileID { get; set; }
 
+        public long? RoleID { get; set; }
+
         public string? Category { get; set; }
 
         public bool IsAssigned { get; set; }

@@ -70,13 +70,13 @@ namespace CbsAp.API.Controllers.v1
         }
 
         [Authorize]
-        [HttpGet("assigned/entity/{entityProfileID}/category/{categoryName}")]
+        [HttpGet("assigned/entity/{entityProfileID}/category/{categoryName}/role/{roleID}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAssigned(long entityProfileID, string categoryName)
+        public async Task<IActionResult> GetAssigned(long entityProfileID, string categoryName, long roleID)
         {
-            var query = new CodingPermissionAssignedGetQuery(entityProfileID, categoryName);
+            var query = new CodingPermissionAssignedGetQuery(entityProfileID, categoryName, roleID);
             var result = await _mediator.Send(query);
             return CreateResponse(result);
         }

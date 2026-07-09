@@ -25,7 +25,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
         public async Task<ResponseResult<IEnumerable<CodingPermissionDTO>>> Handle(CodingPermissionByEntityCategoryAndNameCodeQuery request, CancellationToken cancellationToken)
         {
             var result = new List<CodingPermissionDTO>();
-            var assignedPermissions = await _codingPermissionRepository.GetAllAsync();
+            var assignedPermissions = await _codingPermissionRepository.GetAllAssignedFilteredAsync(request.filter);
 
             // build a lookup keyed by (EntityProfileID, Category, NameCode)
             var assignedLookup = assignedPermissions
@@ -46,6 +46,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                             {
                                 ID = i.AccountID,
                                 EntityProfileID = i.EntityProfileID,
+                                RoleID = request.filter.RoleID,
                                 Category = request.filter.Category,
                                 NameCode = nameCode,
                                 Name = i.AccountName,
@@ -59,6 +60,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                         {
                             ID = i.AccountID,
                             EntityProfileID = i.EntityProfileID,
+                            RoleID = request.filter.RoleID,
                             Category = request.filter.Category,
                             NameCode = nameCode,
                             Name = i.AccountName,
@@ -88,6 +90,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                             {
                                 ID = i.DimensionID,
                                 EntityProfileID = i.EntityProfileID,
+                                RoleID = request.filter.RoleID,
                                 Category = request.filter.Category,
                                 NameCode = nameCode,
                                 Name = i.Name,
@@ -101,6 +104,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                         {
                             ID = i.DimensionID,
                             EntityProfileID = i.EntityProfileID,
+                            RoleID = request.filter.RoleID,
                             Category = request.filter.Category,
                             NameCode = nameCode,
                             Name = i.Name,

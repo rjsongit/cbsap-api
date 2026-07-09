@@ -1,4 +1,5 @@
-﻿using CbsAp.Domain.Entities.CodingPermissions;
+﻿using CbsAp.Application.DTOs.CodingPermission;
+using CbsAp.Domain.Entities.CodingPermissions;
 
 namespace CbsAp.Application.Abstractions.Persistence
 {
@@ -10,6 +11,8 @@ namespace CbsAp.Application.Abstractions.Persistence
 
         Task<IEnumerable<CodingPermissionAssigned>> GetAllAsync();
 
-        Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName);
+        Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName, long roleID);
+
+        Task<IEnumerable<CodingPermissionAssigned>> GetAllAssignedFilteredAsync(CodingPermissionFilterDTO filter);
     }
 }

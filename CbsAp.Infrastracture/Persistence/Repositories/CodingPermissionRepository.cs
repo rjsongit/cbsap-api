@@ -1,4 +1,5 @@
 ﻿using CbsAp.Application.Abstractions.Persistence;
+using CbsAp.Application.DTOs.CodingPermission;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Domain.Entities.CodingPermissions;
 
@@ -30,10 +31,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
 
             if (existing != null)
             {
-                //existing.NameCode = entity.NameCode;
-                //existing.Category = entity.Category;
-                //existing.EntityProfileID = entity.EntityProfileID;
-
                 existing.IsAssigned = entity.IsAssigned;
                 existing.SetAuditFieldsOnUpdate("system");
                 await repo.UpdateAsync(existing.ID, existing);
@@ -54,12 +51,21 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             return await repo.GetAllAsync();
         }
 
-        public async Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName)
+        public async Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName, long roleID)
         {
             var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
-            //return await repo.FindAsync(i => i.EntityProfileID == entityProfileID && i.Category!.Replace(" ", "").Contains(categoryName.Replace(" ","")) && i.IsAssigned);
-            return await repo.FindAsync(i => i.EntityProfileID == entityProfileID 
-                && i.Category!.Replace(" ", string.Empty).ToLower().Contains(categoryName.Replace(" ", string.Empty).ToLower()) 
+            return await repo.FindAsync(i => i.EntityProfileID == entityProfileID
+                && i.Category!.Replace(" ", string.Empty).ToLower().Contains(categoryName.Replace(" ", string.Empty).ToLower())
+                && i.RoleID == roleID
+                && i.IsAssigned);
+        }
+
+        public async Task<IEnumerable<CodingPermissionAssigned>> GetAllAssignedFilteredAsync(CodingPermissionFilterDTO filter)
+        {
+            var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
+            return await repo.FindAsync(i => i.EntityProfileID == filter.EntityProfileID
+                && i.RoleID == filter.RoleID
+                && i.Category!.Replace(" ", string.Empty).ToLower().Contains(filter.Category.Replace(" ", string.Empty).ToLower())
                 && i.IsAssigned);
         }
     }

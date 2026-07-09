@@ -18,7 +18,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
 
         public async Task<ResponseResult<IEnumerable<CodingPermissionDTO>>> Handle(CodingPermissionAssignedGetQuery request, CancellationToken cancellationToken)
         {
-            var assigned = await _codingPermissionRepository.GetByEntityAndCategoryAsync(request.EntityProfileID, request.CategoryName);
+            var assigned = await _codingPermissionRepository.GetByEntityAndCategoryAsync(request.EntityProfileID, request.CategoryName, request.RoleID);
             var result = assigned.Select(i => new CodingPermissionDTO
             {
                 ID = i.ID,
