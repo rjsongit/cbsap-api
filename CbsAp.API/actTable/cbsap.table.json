@@ -1,10 +1,10 @@
 [
-  "InvInfoRoutingLevel",
-  "ActivityLog",
-  "EntityProfile",
-  "InvInfoRoutingLevel",
-  "InvoiceActivityLog",
-  "PasswordResetAudits",
-  "UserAccount",
-  "UserLogInfo"
+    "InvInfoRoutingLevel",
+    "ActivityLog",
+    "EntityProfile",
+    "InvInfoRoutingLevel",
+    "InvoiceActivityLog",
+    "PasswordResetAudits",
+    "UserAccount",
+    "UserLogInfo"
 ]

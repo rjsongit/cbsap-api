@@ -5,7 +5,6 @@ using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
 using CbsAp.Domain.Entities.Invoicing;
 using CbsAp.Domain.Entities.PO;
-using CbsAp.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +56,7 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
 
             var originalLines = await polinesRepo.Query()
                .Where(o => dtoLineIds.Contains(o.PurchaseOrderLineID))
+               .AsNoTracking()
                .ToListAsync();
 
             var poMatchingRepo = _unitofWork.GetRepository<PurchaseOrderMatchTracking>();
@@ -68,7 +68,6 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
               .ToListAsync();
 
             var matchDict = matchSums.ToDictionary(x => x.PurchaseOrderLineID, x => x.TotalMatchedQty);
-            List<PurchaseOrderLine> poLines = new List<PurchaseOrderLine>();
 
             foreach (var dto in request.SavePOMatchingDto.PoLines!)
             {
@@ -126,19 +125,6 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
                         LineNetAmount = dto.Amount!.Value,
                     };
                     newAllocationline.SetAuditFieldsOnCreate(request.UpdatedBy);
-
-                    long goodsReceiptLineId = 0;
-                    if (original != null)
-                    {
-                        original!.InvoiceStatus = dto.Status == Domain.Enums.POMatchingStatus.FullyMatched ? (int)InvoicePOMatchingStatus.FullyMatched : (int)InvoicePOMatchingStatus.PartiallyMatched;
-                        poLines.Add(original);
-                        var goodsReceipt = original.PurchaseOrder?.GoodsReceiptLines!.Where(x => x.LineNo == original.LineNo).FirstOrDefault();
-                        if (goodsReceipt != null)
-                        {
-                            goodsReceiptLineId = goodsReceipt.GoodsReceiptLineID;
-                        }
-                    }
-
                     var newPOMatching = new PurchaseOrderMatchTracking
                     {
                         PurchaseOrderLineID = dto.PurchaseOrderLineID,
@@ -151,8 +137,7 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
                         MatchingDate = DateTime.UtcNow,
                         CreatedBy = request.UpdatedBy,
                         CreatedDate = DateTime.UtcNow,
-                        InvAllocLine = newAllocationline,
-                        GoodsReceiptLineID = goodsReceiptLineId
+                        InvAllocLine = newAllocationline
                     };
                     await poMatchTrackingRepo.AddAsync(newPOMatching);
                 }
@@ -162,25 +147,22 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
                 .PoLines.Where(x => x.InvAllocLineID.HasValue)
                 .Select(x => x.InvAllocLineID).ToHashSet();
 
-            
             var toRemove = existinngPOMatching
                .Where(x => !idsToRemove.Contains(x.InvAllocLineID))
                .ToList();
 
-            var poLinesToRemove = toRemove.Where(x => x.PurchaseOrderLine != null).Select(x => x.PurchaseOrderLine!).ToList();
-            foreach (var item in poLinesToRemove)
+            var poLines = toRemove.Where(x => x.PurchaseOrderLine != null).Select(x => x.PurchaseOrderLine!);
+            foreach (var item in poLines)
             {
                 item!.InvoiceStatus = 0;
             }
-            poLines.AddRange(poLinesToRemove);
-
 
             var removeIdsAllocation = toRemove.Select(x => x.InvAllocLineID).Distinct().ToList();
 
             var allocationToRemove =
                await invAllocRepo.
                 Query()
-                .Where(a => 
+                .Where(a =>
                 removeIdsAllocation.Contains(a.InvAllocLineID)).ToListAsync(cancellationToken);
 
             await poLineRepo.UpdateRangeAsync(poLines);
@@ -194,7 +176,7 @@ namespace CbsAp.Application.Features.PO.Command.UpdatePO
             }
 
             //Update Purchase order MatchStatus if fully matched or partially matched
-            var purchaseOrderIds = poLines.Select(x => x.PurchaseOrderID).ToList();
+            var purchaseOrderIds = originalLines.Select(x => x.PurchaseOrderID).ToList();
             UpdatePOMatchStatusCommand command = new UpdatePOMatchStatusCommand(purchaseOrderIds);
             await _mediator.Send(command);
 

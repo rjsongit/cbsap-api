@@ -1,6 +1,4 @@
-﻿using CbsAp.Domain.Entities.Invoicing;
-
-namespace CbsAp.Application.DTOs.Invoicing.Invoice
+﻿namespace CbsAp.Application.DTOs.Invoicing.Invoice
 {
     public class InvAllocLineDto
     {
@@ -51,8 +49,6 @@ namespace CbsAp.Application.DTOs.Invoicing.Invoice
         public string DimensionKey { get; set; }
 
         public string DimensionValue { get; set; }
-
-        public long InvAllocLineDimensionID { get; set; }
     }
 
     public class InvAllocEntryDto
@@ -81,7 +77,5 @@ namespace CbsAp.Application.DTOs.Invoicing.Invoice
 
         public decimal LineAmount { get; set; }
         public bool IsFromPOMatching { get; set; }
-
-        public ICollection<InvAllocLineDimensionDto> Dimensions { get; set; } = new List<InvAllocLineDimensionDto>();
     }
 }

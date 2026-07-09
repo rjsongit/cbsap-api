@@ -1,16 +1,13 @@
-﻿using Bogus;
-using CbsAp.Application.DTOs.ActivityLog;
-using CbsAp.Domain.Entities.ActivityLog;
-using CbsAp.Domain.Entities.AdvanceSearch;
+﻿using System.Reflection;
+using System.Text.Json;
+using Bogus;
 using CbsAp.Domain.Entities.Dashboard;
 using CbsAp.Domain.Entities.Dimensions;
-using CbsAp.Domain.Entities.DimensionSetup;
 using CbsAp.Domain.Entities.Entity;
 using CbsAp.Domain.Entities.GoodReceipts;
 using CbsAp.Domain.Entities.Invoicing;
 using CbsAp.Domain.Entities.InvoicingArchive;
 using CbsAp.Domain.Entities.Keywords;
-using CbsAp.Domain.Entities.LayoutConfigs;
 using CbsAp.Domain.Entities.PermissionManagement;
 using CbsAp.Domain.Entities.PO;
 using CbsAp.Domain.Entities.RoleManagement;
@@ -18,8 +15,7 @@ using CbsAp.Domain.Entities.Supplier;
 using CbsAp.Domain.Entities.System;
 using CbsAp.Domain.Entities.TaxCodes;
 using CbsAp.Domain.Entities.UserManagement;
-using DocumentFormat.OpenXml.InkML;
-using DocumentFormat.OpenXml.Office2010.Excel;
+using CbsAp.Domain.Entities.ActivityLog;
 using DocumentFormat.OpenXml.Vml.Office;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -28,9 +24,6 @@ using CbsAp.Application.DTOs.ActivityLog;
 using CbsAp.Domain.Entities.AdvanceSearch;
 using CbsAp.Domain.Entities.DimensionSetup;
 using CbsAp.Domain.Entities.CodingPermissions;
-
-using System.Reflection;
-using System.Text.Json;
 
 namespace CbsAp.Infrastracture.Contexts
 {
@@ -132,9 +125,8 @@ namespace CbsAp.Infrastracture.Contexts
         public DbSet<ActivityLog> ActivityLogs { get; set; }
 
         public DbSet<AdvanceSearch> AdvanceSearches { get; set; }
-        public DbSet<CodingPermissionAssigned> CodingPermission { get; set; }
 
-        public DbSet<LayoutConfig> LayoutConfigs { get; set; }
+        public DbSet<CodingPermissionAssigned> CodingPermission { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -154,61 +146,24 @@ namespace CbsAp.Infrastracture.Contexts
             .ToList();
             var dateNow = DateTime.UtcNow;
             var activityList = new List<ActivityLogDto>();
-
-            var dimensionSetups = this.DimensionSetups.ToList();
-
             foreach (var entry in entries)
             { 
                 var tableName = entry.Metadata.GetTableName();
-
-
-                var isDimension = (tableName == "InvAllocLineDimension");
-
-                var childContext = new List<InvAllocLineDimension>();
-                //This is for child
-                var parentInvoiceAllocationLine = new InvAllocLine();
-
-                var dimensionColumnNameHolder = "";
                 if (entry.State == EntityState.Modified)
                 {
-                
                     foreach (var prop in entry.OriginalValues.Properties)
                     {
-               
                         var activity = new ActivityLogDto();
                         var propertyEntry = entry.Property(prop.Name);
-
-                        var propName = propertyEntry.Metadata.Name;
-
-
-                        if (isDimension)
-                        {
-                            AuditModule = "InvoiceAllocation";
-                            if (propName == "DimensionKey")
-                            {
-                                //ConvertColumn into specific name
-                                var dimensionKey = entry.OriginalValues[prop.Name]?.ToString();
-                                var dimensionname = dimensionSetups.FirstOrDefault(x => x.DimensionSetupName.Replace(" ", "").ToUpper() == dimensionKey.ToUpper());
-                                dimensionColumnNameHolder = dimensionname.DimensionName;
-                                continue; // then  skip to insertion
-                            }
-
-                            if (propName == "DimensionValue" && entry.CurrentValues[prop.Name]?.ToString() == "0") continue;
-                            if (propName == "InvAllocLineDimensionID") continue;
-                            if (propName == "InvAllocLineID") continue;
-
-                        }
-
                         if (propertyEntry.IsModified)
                         {
-
                             activity.Activity = "UPDATE";
                             activity.ActivityDate = dateNow;
                             activity.ActionBy = AuditUser;
                             activity.Module =  AuditModule;
                             activity.OldValue = entry.OriginalValues[prop.Name] != null ? entry.OriginalValues[prop.Name].ToString() : string.Empty;
                             activity.NewValue = entry.CurrentValues[prop.Name] != null ? entry.CurrentValues[prop.Name].ToString() : string.Empty;
-                            activity.ColumnName = (isDimension) ? dimensionColumnNameHolder : propertyEntry.Metadata.Name;
+                            activity.ColumnName = propertyEntry.Metadata.Name;
                             activity.TableName = tableName;
                             activity.metaDataNew = entry.State == EntityState.Added || entry.State == EntityState.Modified
                                                     ? JsonSerializer.Serialize(entry.CurrentValues.Properties
@@ -252,12 +207,8 @@ namespace CbsAp.Infrastracture.Contexts
                     var pkValues = entry.Metadata.FindPrimaryKey().Properties
                     .ToDictionary(p => p.Name, p => entry.Property(p.Name).CurrentValue);
                     var activity = new ActivityLogDto();
-
-
-
                     foreach (var prop in entry.CurrentValues.Properties)
                     {
-
                         activity.Activity = "INSERT";
                         activity.OldValue = string.Empty;
                         activity.NewValue = string.Empty;
@@ -333,8 +284,6 @@ namespace CbsAp.Infrastracture.Contexts
             }).Where(w => !tableList.Contains(w.TableName)).ToList();
 
             var _filteredByColumn = _filteredByTable.Where(w => !columnList.Contains(w.ColumnName)).ToList();
-
-            // Dimension for allocationline
 
             
             ActivityLogs.AddRange(_filteredByColumn);

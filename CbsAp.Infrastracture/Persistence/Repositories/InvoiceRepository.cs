@@ -189,7 +189,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 PoNumber = i.PoNo,
                 DueDate = i.DueDate!.Value.LocalDateTime.ToString("yyyy-MM-dd"),
                 GrossAmount = i.TotalAmount,
-                ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
               //  ExceptionReason = null,
             });
 
@@ -365,7 +364,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 PoNumber = i.PoNo,
                 DueDate = i.DueDate!.Value.LocalDateTime.ToString("yyyy-MM-dd"),
                 GrossAmount = i.TotalAmount,
-                ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
 
                 ExceptionReason = string.Join("; ", i.InvoiceActivityLog!
                 .Where(
@@ -553,7 +551,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 PoNumber = i.PoNo,
                 DueDate = i.DueDate!.Value.LocalDateTime.ToString("yyyy-MM-dd"),
                 GrossAmount = i.TotalAmount,
-                ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
                 NextRole = i.InvInfoRoutingLevels != null ? i.StatusType == InvoiceStatusType.ReadyForExport ? string.Empty : i.InvInfoRoutingLevels!
                                   .Where(i => i.InvFlowStatus == 0)
                                   .OrderBy(o => o.Level)
@@ -741,7 +738,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 PoNumber = i.PoNo,
                 DueDate = i.DueDate!.Value.LocalDateTime.ToString("yyyy-MM-dd"),
                 GrossAmount = i.TotalAmount,
-                ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
+
                 Reason = (i.StatusType == InvoiceStatusType.Rejected) ? (i.InvoiceActivityLog
                                      .Where(x => x.CurrentStatus == InvoiceStatusType.Rejected && x.Action.HasValue &&
                                                  new[] { InvoiceActionType.Reject,
@@ -911,8 +908,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         { "displayDueDate", "dueDate" },
         { "displayGrossAmount", "grossAmount" },
         { "exceptionReason", "exceptionReason" },
-        { "reason", "reason" },
-           { "scanDate", "scanDateSort" }
+        { "reason", "reason" }
       };
 
             sortField = sortDictionary.ContainsKey(sortField ?? string.Empty)
@@ -943,8 +939,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                         DueDate =
                           i.DueDate == null ? null : i.DueDate.Value.UtcDateTime,
                         GrossAmount = i.TotalAmount,
-                        ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
-                        ScanDateSort = i.ScanDate!.Value,
                         ExceptionReason = null,
                         IsSelected = false
                     })
@@ -1121,8 +1115,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         { "displayDueDate", "dueDate" },
         { "displayGrossAmount", "grossAmount" },
         { "exceptionReason", "exceptionReason" },
-        { "reason", "reason" },
-           { "scanDate", "scanDateSort" }
+        { "reason", "reason" }
       };
 
             sortField = sortDictionary.ContainsKey(sortField ?? string.Empty)
@@ -1150,8 +1143,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                         DueDate =
                           i.DueDate == null ? null : i.DueDate.Value.UtcDateTime,
                         GrossAmount = i.TotalAmount,
-                        ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
-                        ScanDateSort = i.ScanDate!.Value,
                         ExceptionReason = string.Join(
                           "; ",
                           i.InvoiceActivityLog!
@@ -1167,8 +1158,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                         IsSelected = false
                     })
                     .ToListAsync();
-
-
 
             var pagination = await dtoQuery.OrderByDynamic(sortField, sortOrder)
                                  .ToPaginatedListAsync(pageNumber, pageSize, token);
@@ -1213,7 +1202,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 TaxCodeID = ia.TaxCodeID,
                 LineApproved = ia.LineApproved,
                 Note = ia.Note,
-                
                 FreeFields =
                   ia.FreeFields != null
                       ? ia.FreeFields
@@ -1230,13 +1218,10 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                                      .Select(f => new InvAllocLineDimensionDto
                                      {
                                          DimensionKey = f.DimensionKey,
-                                         DimensionValue = f.DimensionValue,
-                                         InvAllocLineDimensionID = f.InvAllocLineDimensionID
-
+                                         DimensionValue = f.DimensionValue
                                      })
                                      .ToList()
                                : new List<InvAllocLineDimensionDto>(),
-                
             });
 
             var invoiceAllocationPagination =
@@ -1280,10 +1265,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                     Account = dto.AccountID,
                     IsFromPOMatching = dto.PurchaseOrderMatchTrackings.Any(
                       a => a.InvAllocLineID == dto.InvAllocLineID),
-                    Dimensions = dto.Dimensions.Select(x => new InvAllocLineDimensionDto {
-                        InvAllocLineDimensionID = x.InvAllocLineDimensionID,
-                        DimensionKey = x.DimensionKey, 
-                        DimensionValue = x.DimensionValue }).ToArray()
                 })
                 .ToListAsync(token);
         }
@@ -1565,13 +1546,19 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         { "displayDueDate", "dueDate" },
         { "displayGrossAmount", "grossAmount" },
         { "exceptionReason", "exceptionReason" },
-        { "reason", "reason" },
-        { "scanDate", "scanDateSort" }
+        { "reason", "reason" }
       };
 
             sortField = sortDictionary.ContainsKey(sortField ?? string.Empty)
                             ? sortDictionary[sortField ?? string.Empty]
                             : null;
+
+            if (string.IsNullOrEmpty(sortField))
+
+            {
+                query =
+                    query.OrderByDescending(p => p.LastUpdatedDate ?? p.CreatedDate);
+            }
 
             var dtoQuery =
                 await query
@@ -1588,8 +1575,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                         DueDate =
                           i.DueDate == null ? null : i.DueDate.Value.UtcDateTime,
                         GrossAmount = i.TotalAmount,
-                        ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
-                        ScanDateSort = i.ScanDate!.Value,
                         NextRole =
                           i.InvInfoRoutingLevels != null
                               ? i.StatusType == InvoiceStatusType.ReadyForExport
@@ -1787,8 +1772,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         { "displayDueDate", "dueDate" },
         { "displayGrossAmount", "grossAmount" },
         { "exceptionReason", "exceptionReason" },
-        { "reason", "reason" },
-           { "scanDate", "scanDateSort" }
+        { "reason", "reason" }
       };
             sortField = sortDictionary.ContainsKey(sortField ?? string.Empty)
                             ? sortDictionary[sortField ?? string.Empty]
@@ -1816,8 +1800,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                         DueDate =
                           i.DueDate == null ? null : i.DueDate.Value.UtcDateTime,
                         GrossAmount = i.TotalAmount,
-                        ScanDate = i.ScanDate!.Value.LocalDateTime.ToString("dd/MM/yyyy"),
-                        ScanDateSort = i.ScanDate!.Value,
                         ArchiveDate = null,
                         InvoiceApprover = null,
                         Reason =
@@ -1838,8 +1820,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                     })
                     .ToListAsync();
 
-
- 
             var pagination = await dtoQuery.OrderByDynamic(sortField, sortOrder)
                                  .ToPaginatedListAsync(pageNumber, pageSize, token);
 

@@ -34,7 +34,5 @@ namespace CbsAp.Application.DTOs.UserManagement
         public List<RoleDTO> UserRoles { get; set; }
 
         public int CountOfAssignedRoles { get; set; }
-
-        public int? LayoutConfigValue { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-namespace CbsAp.Application.DTOs.CodingPermission
+﻿namespace CbsAp.Application.DTOs.CodingPermission
 {
     public class CodingPermissionEntityDTO
     {

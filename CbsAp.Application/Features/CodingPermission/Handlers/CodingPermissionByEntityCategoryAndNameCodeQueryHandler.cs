@@ -29,7 +29,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
 
             // build a lookup keyed by (EntityProfileID, Category, NameCode)
             var assignedLookup = assignedPermissions
-                .ToDictionary(ap => (ap.EntityProfileID, ap.Category, ap.NameCode), ap => ap.IsAssigned);
+                .ToDictionary(ap => (ap.EntityProfileID, ap.Category!.Replace(" ", string.Empty).ToLower(), ap.NameCode), ap => ap.IsAssigned);
 
             switch (request.filter.Category.ToLower())
             {
@@ -38,7 +38,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                     result = accounts.Select(i =>
                     {
                         var nameCode = $"{i.AccountID}-{i.AccountName}";
-                        var key = (i.EntityProfileID, request.filter.Category, nameCode);
+                        var key = (i.EntityProfileID, request.filter.Category.Replace(" ", string.Empty).ToLower(), nameCode);
 
                         if (assignedLookup.TryGetValue(key, out var isAssigned))
                         {
@@ -80,7 +80,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
                     result = dimensions.Select(i =>
                     {
                         var nameCode = $"{i.DimensionCode}-{i.Name}";
-                        var key = (i.EntityProfileID, request.filter.Category, nameCode);
+                        var key = (i.EntityProfileID, request.filter.Category.Replace(" ", string.Empty).ToLower(), nameCode);
 
                         if (assignedLookup.TryGetValue(key, out var isAssigned))
                         {

@@ -15,7 +15,6 @@ namespace CbsAp.Application.Abstractions.Persistence
         string? supplierNo,
         List<long>? ExcludesMatchPOLineIds,
         bool IsAvailableOrder,
-        bool IsDeliveredOrder,
         CancellationToken token);
 
         Task<List<SearchPoLinesDto>> GetPOMatchingByInvID(string PONo, long InvoiceID, CancellationToken cancellationToken);
@@ -26,8 +25,6 @@ namespace CbsAp.Application.Abstractions.Persistence
         string? Supplier,
         bool? IsActive,
         string? GoodReceipt,
-        bool? IsMatchable,
-        bool? IsDelivered,
         int pageNumber,
         int pageSize,
         string? sortField,

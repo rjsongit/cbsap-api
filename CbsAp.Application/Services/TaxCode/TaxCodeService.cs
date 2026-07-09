@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Eventing.Reader;
-using CbsAp.Application.Abstractions.Persistence;
+﻿using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.Abstractions.Services.TaxCode;
 using CbsAp.Application.DTOs.TaxCodesManagement;
 using CbsAp.Domain.Entities.TaxCodes;
@@ -16,10 +15,10 @@ namespace CbsAp.Application.Services.TaxCodes
             _unitofWork = unitofWork;
         }
 
-        public async Task<IEnumerable<TaxCodeLookupDto>> GetTaxCodeLookupAsync(long entityId)
+        public async Task<IEnumerable<TaxCodeLookupDto>> GetTaxCodeLookupAsync()
         {
-            var result = _unitofWork.GetRepository<TaxCode>().Query().Where(w => w.EntityID == entityId).AsQueryable();
-                
+            var result = await _unitofWork.GetRepository<TaxCode>()
+                .GetAllAsync();
 
             var dto = result.ProjectToType<TaxCodeLookupDto>();
             return dto.AsEnumerable();

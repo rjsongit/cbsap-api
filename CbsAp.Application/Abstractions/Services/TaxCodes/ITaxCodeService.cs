@@ -9,6 +9,6 @@ namespace CbsAp.Application.Abstractions.Services.TaxCode
 {
     public interface ITaxcodeService 
     {
-        Task<IEnumerable<TaxCodeLookupDto>> GetTaxCodeLookupAsync(long entityId);
+        Task<IEnumerable<TaxCodeLookupDto>> GetTaxCodeLookupAsync();
     }
 }

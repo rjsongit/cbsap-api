@@ -14,8 +14,7 @@ namespace CbsAp.Application.Features.PO.Queries.SearchPOLines
         string? DeliveryNo,
         string? SupplierNo,
         List<long>? ExcludesMatchPOLineIds,
-        bool IsAvailableOrder,
-        bool isDeliveredOrder
+        bool IsAvailableOrder 
         // bool? IsAvailableOrder  TODO
         ) :
         IQuery<ResponseResult<List<SearchPoLinesDto>>>

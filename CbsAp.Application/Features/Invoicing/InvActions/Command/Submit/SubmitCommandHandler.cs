@@ -4,12 +4,12 @@ using CbsAp.Application.DTOs.Invoicing.Invoice;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
 using CbsAp.Domain.Entities.ActivityLog;
-using CbsAp.Domain.Entities.DimensionSetup;
 using CbsAp.Domain.Entities.Entity;
 using CbsAp.Domain.Entities.GoodReceipts;
 using CbsAp.Domain.Entities.Invoicing;
 using CbsAp.Domain.Entities.PermissionManagement;
 using CbsAp.Domain.Entities.PO;
+using CbsAp.Domain.Entities.RoleManagement;
 using CbsAp.Domain.Entities.Supplier;
 using CbsAp.Domain.Entities.TaxCodes;
 using CbsAp.Domain.Entities.UserManagement;
@@ -19,6 +19,7 @@ using CBSAP.ValidationEngine.Core;
 using LinqKit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 
 namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Submit
 {
@@ -162,9 +163,6 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Submit
                .Include(x => x.GoodsReceiptLines)
                .Where(p => p.GoodsReceiptNumber == invoice.GrNo).AsEnumerable();
 
-            var invoiceAllocationLines = invoice.InvoiceAllocationLines?.AsEnumerable();
-            var dimensionSetup = _unitOfWork.GetRepository<CbsAp.Domain.Entities.DimensionSetup.DimensionSetup>().Query().AsNoTracking().ToList();
-
             string ruleFilePath = Path.Combine("rulesfiles", $"cbsap.{_env.EnvironmentName}.json");
 
             if (!File.Exists(ruleFilePath))
@@ -184,9 +182,7 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Submit
                 ["PurchaseOrders"] = purchaseOrders,
                 ["POMatchingConfig"] = poMatchingConfig!,
                 ["MatchedPurchaseOrders"] = matchedPurchaseOrders,
-                ["GoodsReceipts"] = goodsReceipts,
-                ["InvoiceAllocationLines"] = invoiceAllocationLines,
-                ["DimensionSetup"] = dimensionSetup
+                ["GoodsReceipts"] = goodsReceipts
             };
 
             var validationResults = engine.Validate(invoice, runtimeContext, out bool stopEarly);

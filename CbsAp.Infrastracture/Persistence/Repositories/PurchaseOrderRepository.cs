@@ -142,8 +142,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             string? Supplier,
             bool? IsActive,
             string? GoodReceipt,
-            bool? IsMatchable,
-            bool? IsDelivered,
             int pageNumber,
             int pageSize,
             string? sortField,
@@ -168,10 +166,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                          .Any(grl =>
                              grl.GoodsReceipt != null &&
                              grl.GoodsReceipt.GoodsReceiptNumber.Contains(GoodReceipt!)
-                 ))
-                
-                .AndIf((IsMatchable == true), po => po.MatchStatus != MatchingStatus.FullyMatched)
-                .AndIf((IsDelivered == true), po => po.PurchaseOrderLines!.Any(x => x.DeliveryStatus != (int)POLineDeliveryStatus.NotDelivered));
+                 ));
 
             var query = _dbcontext.PurchaseOrders
                 .Include(p => p.SupplierInfo)
@@ -213,7 +208,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             string? supplierNo,
             List<long>? ExcludesMatchPOLineIds,
             bool IsAvailableOrder,
-            bool IsDeliveredOrder,
             CancellationToken token)
         {
             ExpressionStarter<PurchaseOrder> predicate
@@ -228,8 +222,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
 
              .AndIf(PODateFrom.HasValue, p => p.PurchaseDate >= PODateFrom!.Value)
              .AndIf(PODateTo.HasValue, p => p.PurchaseDate <= PODateTo!.Value)
-             .AndIf(!string.IsNullOrEmpty(supplierNo), p => p.SupplierNo!.Contains(supplierNo!))
-             .AndIf((IsDeliveredOrder == true), p => p.PurchaseOrderLines!.Any(pol => pol.DeliveryStatus != (int)POLineDeliveryStatus.NotDelivered));
+             .AndIf(!string.IsNullOrEmpty(supplierNo), p => p.SupplierNo!.Contains(supplierNo!));
 
             // .AndIf(!string.IsNullOrEmpty(DeliveryNo), p => p.PoNo!.Contains(DeliveryNo!));
             //.AndIf(!string.IsNullOrEmpty(Keyword), p => p.PoNo!.Contains(Keyword!));
@@ -244,7 +237,8 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                  .AsQueryable()
                  .AsExpandable()
                  .Where(predicate)
-                 .Where(p => p.PurchaseOrderLines!.Any(a => a.IsActive == true));
+                 .Where(p => p.PurchaseOrderLines!.Any(a => a.IsActive == true))
+                ;
 
             var results = new List<SearchPoLinesDto>();
 

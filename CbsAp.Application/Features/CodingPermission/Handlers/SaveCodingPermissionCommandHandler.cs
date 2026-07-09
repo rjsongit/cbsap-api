@@ -1,5 +1,4 @@
-﻿
-using CbsAp.Application.Abstractions.Messaging;
+﻿using CbsAp.Application.Abstractions.Messaging;
 using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.Features.CodingPermission.Command;
 using CbsAp.Application.Shared.ResultPatten;

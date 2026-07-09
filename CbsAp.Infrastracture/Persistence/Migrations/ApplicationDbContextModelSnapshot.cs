@@ -128,44 +128,6 @@ namespace CbsAp.Infrastracture.Persistence.Migrations
                     b.ToTable("AdvanceSearch", "CBSAP");
                 });
 
-            modelBuilder.Entity("CbsAp.Domain.Entities.CodingPermissions.CodingPermissionAssigned", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("NVARCHAR");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<long?>("EntityProfileID")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsAssigned")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NameCode")
-                        .HasColumnType("NVARCHAR");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("CodingPermissionAssigned", "CBSAP");
-                });
-
             modelBuilder.Entity("CbsAp.Domain.Entities.Dashboard.Notice", b =>
                 {
                     b.Property<long>("NoticeID")
@@ -1623,41 +1585,6 @@ namespace CbsAp.Infrastracture.Persistence.Migrations
                     b.HasIndex("InvoiceRoutingFlowID");
 
                     b.ToTable("Keyword", "CBSAP");
-                });
-
-            modelBuilder.Entity("CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig", b =>
-                {
-                    b.Property<long>("LayoutConfigId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("LayoutConfigId"));
-
-                    b.Property<string>("CreatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTimeOffset?>("CreatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.Property<DateTimeOffset?>("LastUpdatedDate")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("LayoutValue")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Username")
-                        .HasMaxLength(150)
-                        .HasColumnType("NVARCHAR");
-
-                    b.HasKey("LayoutConfigId")
-                        .HasAnnotation("SqlServer:Identity", "1, 1");
-
-                    b.ToTable("LayoutConfig", "CBSAP");
                 });
 
             modelBuilder.Entity("CbsAp.Domain.Entities.PO.PurchaseOrder", b =>

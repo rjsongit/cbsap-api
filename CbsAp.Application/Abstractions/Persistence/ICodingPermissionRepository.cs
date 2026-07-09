@@ -1,5 +1,4 @@
-﻿
-using CbsAp.Domain.Entities.CodingPermissions;
+﻿using CbsAp.Domain.Entities.CodingPermissions;
 
 namespace CbsAp.Application.Abstractions.Persistence
 {

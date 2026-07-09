@@ -1,10 +1,8 @@
-﻿using Bogus.DataSets;
-using CbsAp.Application.Abstractions.Messaging;
+﻿using CbsAp.Application.Abstractions.Messaging;
 using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.DTOs.CodingPermission;
 using CbsAp.Application.Features.CodingPermission.Queries;
 using CbsAp.Application.Shared.ResultPatten;
-using CbsAp.Domain.Entities.Entity;
 
 
 namespace CbsAp.Application.Features.CodingPermission.Handlers
@@ -16,7 +14,6 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
         private readonly IDimensionRepository _dimensionRepository;
         private readonly ICodingPermissionRepository _codingPermissionRepository;
 
-       
         public CodingPermissionByEntityAndCategoryQueryHandler(IAccountRepository accountRepository
             , IDimensionRepository dimensionRepository
             , ICodingPermissionRepository codingPermissionRepository)
@@ -39,10 +36,8 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
             {
                 case "account":
                     var accounts = await _accountRepository.GetAccountsByEntityProfileIDAsync(request.EntityProfileID, cancellationToken);
-                   
                     result = accounts.Select(i =>
                     {
-                        
                         var nameCode = $"{i.AccountID}-{i.AccountName}";
                         var key = (i.EntityProfileID, request.CategoryName, nameCode);
 
@@ -80,7 +75,6 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
 
                 default:
                     var dimensions = await _dimensionRepository.GetDimensionByEntityProfileIDAsync(request.EntityProfileID, cancellationToken);
-                 
                     result = dimensions.Select(i =>
                     {
                         var nameCode = $"{i.DimensionCode}-{i.Name}";
@@ -120,4 +114,5 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
             }
         }
     }
+
 }

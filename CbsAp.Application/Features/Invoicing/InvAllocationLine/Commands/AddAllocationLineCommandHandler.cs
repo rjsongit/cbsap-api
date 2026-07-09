@@ -34,12 +34,6 @@ namespace CbsAp.Application.Features.Invoicing.InvAllocationLine.Commands
                 LineAmount = dto.LineAmount,
                 TaxCodeID = dto.TaxCodeID,
                 AccountID = dto.Account,
-                Dimensions = request.invoiceDto.Dimensions.Select(x =>
-                            new InvAllocLineDimension { 
-                                InvAllocLineDimensionID = x.InvAllocLineDimensionID, 
-                                InvAllocLineID = dto.InvAllocLineID, 
-                                DimensionKey = x.DimensionKey, 
-                                DimensionValue = x.DimensionValue }).ToList()
             };
 
             invAllocLine.SetAuditFieldsOnCreate(request.CreatedBy);

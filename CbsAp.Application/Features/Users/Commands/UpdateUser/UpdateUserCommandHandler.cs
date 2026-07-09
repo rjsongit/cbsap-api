@@ -5,7 +5,6 @@ using CbsAp.Application.Features.Users.Commands.Common;
 using CbsAp.Application.Shared.Encryption;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
-using CbsAp.Domain.Entities.LayoutConfigs;
 using CbsAp.Domain.Entities.PermissionManagement;
 using CbsAp.Domain.Entities.RoleManagement;
 using CbsAp.Domain.Entities.UserManagement;
@@ -20,7 +19,6 @@ namespace CbsAp.Application.Features.Users.Commands.UpdateUser
     {
         private readonly IUnitofWork _unitofWork;
         private readonly IUserManagementRepository _userManagementRepository;
-        private readonly ILayoutConfigRepository _layoutConfigRepository;
         private readonly ISender _mediator;
         private readonly IHasher _hasher;
         private readonly IMapper _mapper;
@@ -30,7 +28,6 @@ namespace CbsAp.Application.Features.Users.Commands.UpdateUser
         public UpdateUserCommandHandler(
             IUnitofWork unitofWork,
             IUserManagementRepository userManagementRepository,
-            ILayoutConfigRepository layoutConfigRepository,
             ISender mediator,
             IHasher hasher,
             IMapper mapper,
@@ -39,7 +36,6 @@ namespace CbsAp.Application.Features.Users.Commands.UpdateUser
         {
             _unitofWork = unitofWork;
             _userManagementRepository = userManagementRepository;
-            _layoutConfigRepository = layoutConfigRepository;
             _mediator = mediator;
             _hasher = hasher;
             _mapper = mapper;
@@ -105,49 +101,6 @@ namespace CbsAp.Application.Features.Users.Commands.UpdateUser
             {
                 _logger.LogError("Error on  updating user : {@UserID}", request.userDTO.UserID);
                 return ResponseResult<string>.BadRequest("Error on updating user ");
-            }
-            else
-            {
-                var layoutConfig = await _layoutConfigRepository.GetExistingUserConfig(request.userDTO.UserID);
-
-                var newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig();
-
-
-                if (layoutConfig != null)
-                {
-                    //update
-                    newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig
-                    {
-                        LayoutConfigId = layoutConfig.LayoutConfigId,
-                        Username = layoutConfig.Username,
-                        LayoutValue = request.userDTO.LayoutConfigValue ?? 0
-                    };
-
-                    newconfig.SetAuditFieldsOnUpdate(request.UpdatedBy);
-
-                    await _unitofWork.GetRepository<CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig>().UpdateAsync(newconfig.LayoutConfigId, newconfig);
-                    await _unitofWork.SaveChanges(string.Empty, string.Empty, cancellationToken);
-
-                }
-                else
-                {
-                    //Add
-                    newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig
-                    {
-                        LayoutConfigId = 0,
-                        Username = request.userDTO.UserID,
-                        LayoutValue = request.userDTO.LayoutConfigValue ?? 0
-                    };
-
-                    newconfig.SetAuditFieldsOnCreate(request.UpdatedBy);
-
-                    await _unitofWork.GetRepository<CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig>().AddAsync(newconfig);
-                    await _unitofWork.SaveChanges(string.Empty, string.Empty, cancellationToken);
-                }
-
-
-
-
             }
             return ResponseResult<string>.OK("user is successfully updated");
         }

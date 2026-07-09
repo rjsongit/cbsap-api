@@ -148,9 +148,6 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Validate
                .Where(p => p.GoodsReceiptNumber == invoice.GrNo).AsEnumerable();
 
 
-            var invoiceAllocationLines = invoice.InvoiceAllocationLines?.AsEnumerable();
-            var dimensionSetup = _unitOfWork.GetRepository<CbsAp.Domain.Entities.DimensionSetup.DimensionSetup>().Query().AsNoTracking().ToList();
-
             string ruleFilePath = Path.Combine("rulesfiles", $"cbsap.{_env.EnvironmentName}.json");
 
             if (!File.Exists(ruleFilePath))
@@ -170,9 +167,7 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Validate
                 ["PurchaseOrders"] = purchaseOrders,
                 ["POMatchingConfig"]= poMatchingConfig!,
                 ["MatchedPurchaseOrders"]=matchedPurchaseOrders,
-                ["GoodsReceipts"]= goodsReceipts,
-                ["InvoiceAllocationLines"] = invoiceAllocationLines,
-                ["DimensionSetup"] = dimensionSetup
+                ["GoodsReceipts"]= goodsReceipts
             };
 
             var validationResult = engine.Validate(invoice, runtimeContext, out bool stopEarly);

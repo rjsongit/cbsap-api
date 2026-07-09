@@ -98,7 +98,6 @@ namespace CbsAp.Application.Features.Dashboard.Queries
                 InvoiceNumber = i.InvoiceNo,
                 Amount = i.TotalAmount,
                 DueDate = i.DueDate == null ? null : i.DueDate!.Value.UtcDateTime,
-                ScanDate = i.ScanDate == null ? null : i.ScanDate!.Value.ToString("yyyy-MM-dd"),
                 AssignedRole = i.ApproverInvoices != null ? i.ApproverInvoices.RoleName : string.Empty,
                 AssignedRoleId = i.ApproverRole
             }).ToListAsync(cancellationToken);

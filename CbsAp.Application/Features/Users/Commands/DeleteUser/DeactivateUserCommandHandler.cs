@@ -3,7 +3,6 @@ using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
 using CbsAp.Domain.Entities.Invoicing;
-using CbsAp.Domain.Entities.LayoutConfigs;
 using CbsAp.Domain.Entities.UserManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,15 +13,12 @@ namespace CbsAp.Application.Features.Users.Commands.DeleteUser
         : ICommandHandler<DeactivateUserCommand, ResponseResult<string>>
     {
         private readonly IUnitofWork _unitWork;
-        private readonly ILayoutConfigRepository _layoutConfigRepository;
         private readonly ILogger<DeactivateUserCommandHandler> _logger;
 
         public DeactivateUserCommandHandler(
             IUnitofWork unitofWork,
-            ILayoutConfigRepository layoutConfigRepository,
             ILogger<DeactivateUserCommandHandler> logger)
         {
-            _layoutConfigRepository = layoutConfigRepository;
             _unitWork = unitofWork;
             _logger = logger;
         }
@@ -55,13 +51,6 @@ namespace CbsAp.Application.Features.Users.Commands.DeleteUser
             }
             else
             {
-                var layoutconfig = await _layoutConfigRepository.GetExistingUserConfig(userAccount.UserID);
-                if(layoutconfig != null)
-                {
-                    await _unitWork.GetRepository<CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig>().DeleteAsync(layoutconfig);
-
-                }
-        
                 await _unitWork.GetRepository<UserAccount>().DeleteAsync(userAccount);
             }
 

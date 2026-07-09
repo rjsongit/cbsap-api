@@ -1,10 +1,11 @@
-﻿
-namespace CbsAp.Application.DTOs.CodingPermission
+﻿namespace CbsAp.Application.DTOs.CodingPermission
 {
     public class CodingPermissionDTO
     {
         public long? ID { get; set; }
+
         public long? EntityProfileID { get; set; }
+
         public string? Category { get; set; }
 
         public string? NameCode { get; set; }

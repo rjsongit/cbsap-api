@@ -8,7 +8,5 @@
         public string EmailAddress { get; set; }
         public bool IsActive { get; set; }
         public List<int> UserRoles { get; set; }
-
-        public int? LayoutConfigValue { get; set; }
     }
 }
