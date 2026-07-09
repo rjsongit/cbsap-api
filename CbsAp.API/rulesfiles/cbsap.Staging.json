@@ -221,6 +221,15 @@
       "severity": "Error",
       "nextStatus": "Exception",
       "targetQueue": "ExceptionQueue"
+    },
+    {
+      "type": "PurchaseOrderLineRequiredFieldRule",
+      "field": "DimensionValue",
+      "errorMessage": "Missing {0}",
+      "errorCode": "08",
+      "severity": "Error",
+      "nextStatus": "Exception",
+      "targetQueue": "ExceptionQueue"
     }
 
   ]

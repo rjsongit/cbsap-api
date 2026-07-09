@@ -3,6 +3,7 @@ using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.DTOs.Invoicing.Invoice;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
+using CbsAp.Domain.Entities.DimensionSetup;
 using CbsAp.Domain.Entities.Entity;
 using CbsAp.Domain.Entities.Invoicing;
 using CbsAp.Domain.Entities.PO;
@@ -139,6 +140,10 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.ForApproval
                 .Include(p => p.PurchaseOrderLine)
                 .Where(p => p.InvoiceID == invoice.InvoiceID).AsEnumerable();
 
+
+            var invoiceAllocationLines = invoice.InvoiceAllocationLines?.AsEnumerable();
+            var dimensionSetup = _unitOfWork.GetRepository<CbsAp.Domain.Entities.DimensionSetup.DimensionSetup>().Query().AsNoTracking().ToList();
+
             string ruleFilePath = Path.Combine("rulesfiles", $"cbsap.{_env.EnvironmentName}.json");
 
             if (!File.Exists(ruleFilePath))
@@ -157,7 +162,9 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.ForApproval
                 ["EntityProfile"] = entities,
                 ["PurchaseOrders"] = purchaseOrders,
                 ["POMatchingConfig"] = poMatchingConfig!,
-                ["MatchedPurchaseOrders"] = matchedPurchaseOrders
+                ["MatchedPurchaseOrders"] = matchedPurchaseOrders,
+                ["InvoiceAllocationLines"] = invoiceAllocationLines,
+                ["DimensionSetup"] = dimensionSetup
             };
 
             var validationResults = engine.Validate(invoice, runtimeContext, out bool stopEarly);

@@ -97,13 +97,13 @@ namespace CbsAp.API.Controllers.v1
         }
 
 
-        [HttpGet("tax-codes")]
+        [HttpGet("tax-codes/{entityId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetTaxCodesLookupAsync()
+        public async Task<IActionResult> GetTaxCodesLookupAsync(long entityId)
         {
-            var query = new GetTaxCodesLookupQuery();
+            var query = new GetTaxCodesLookupQuery(entityId);
             var result = await _mediator.Send(query);
             return CreateResponse(result);
         }

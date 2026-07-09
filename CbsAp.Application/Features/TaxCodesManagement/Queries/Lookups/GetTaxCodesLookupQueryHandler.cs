@@ -19,7 +19,7 @@ namespace CbsAp.Application.Features.TaxCodesManagement.Queries.Lookups
             GetTaxCodesLookupQuery request,
             CancellationToken cancellationToken)
         {
-            var results = await _taxcodeService.GetTaxCodeLookupAsync();
+            var results = await _taxcodeService.GetTaxCodeLookupAsync(request.entityId);
 
             return !results.Any() ?
                 ResponseResult<IEnumerable<TaxCodeLookupDto>>.NotFound("No tax code  lookup found ")

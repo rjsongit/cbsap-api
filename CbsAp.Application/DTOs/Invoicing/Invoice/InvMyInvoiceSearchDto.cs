@@ -48,6 +48,10 @@
         public string ExceptionReason { get; set; } = string.Empty;
 
         public bool IsSelected { get; set; }
+
+        public string ScanDate { get; set; }
+
+        public DateTimeOffset ScanDateSort { get; set; }
     }
 
     // Reject Queue Search
@@ -64,6 +68,9 @@
         public string? ArchiveDate { get; set; }
 
         public string Reason { get; set; }
+        public string ScanDate { get; set; }
+
+        public DateTimeOffset ScanDateSort { get; set; }
     }
 
     // Exception Queue Search
@@ -72,6 +79,9 @@
         public string? ExceptionReason { get; set; }
 
         public bool IsSelected { get; set; }
+        public string ScanDate { get; set; }
+
+        public DateTimeOffset ScanDateSort { get; set; }
     }
 
     // Exception Queue Search
@@ -80,5 +90,8 @@
         public string? ExceptionReason { get; set; }
 
         public bool IsSelected { get; set; }
+        public string ScanDate { get; set; }
+
+        public DateTimeOffset ScanDateSort { get; set; }
     }
 }

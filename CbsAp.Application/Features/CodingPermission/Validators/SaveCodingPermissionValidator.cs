@@ -1,4 +1,5 @@
-﻿using CbsAp.Application.Features.CodingPermission.Command;
+﻿
+using CbsAp.Application.Features.CodingPermission.Command;
 using FluentValidation;
 
 namespace CbsAp.Application.Features.CodingPermission.Validators

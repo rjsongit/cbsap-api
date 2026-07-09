@@ -30,6 +30,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             return dimensions;
         }
 
+
         public async Task<IEnumerable<Dimension>> GetDimensionByEntityProfileIDAsync(long entityProfileId, CancellationToken token)
         {
             var dimensions = await _dbcontext.Dimensions
@@ -40,6 +41,8 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             return dimensions;
         }
 
+
+
         public IQueryable<Dimension> GetDimensionsAsQueryable()
         {
             return _dbcontext.Dimensions.AsQueryable();
@@ -49,7 +52,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         {
             var dimensions = await _dbcontext.Dimensions
                 .AsNoTracking()
-                .Where(d => d.EntityProfileID == filter.EntityProfileID 
+                .Where(d => d.EntityProfileID == filter.EntityProfileID
                     && (d.DimensionCode.Contains(filter.NameCode) || d.Name.Contains(filter.NameCode)))
                 .ToListAsync(token);
 

@@ -1,4 +1,5 @@
-﻿using CbsAp.Application.Abstractions.Persistence;
+﻿
+using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Domain.Entities.CodingPermissions;
 
@@ -12,7 +13,6 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         {
             _unitofWork = unitofWork;
         }
-
         public async Task AddAsync(CodingPermissionAssigned entity, CancellationToken cancellationToken)
         {
             await _unitofWork.GetRepository<CodingPermissionAssigned>().AddAsync(entity);
@@ -22,6 +22,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         public async Task AddOrUpdateAsync(CodingPermissionAssigned entity, CancellationToken cancellationToken)
         {
             var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
+
 
             var existing = await repo.FirstOrDefaultAsync(cp
                     => cp.EntityProfileID == entity.EntityProfileID
@@ -57,10 +58,15 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
         public async Task<IEnumerable<CodingPermissionAssigned>> GetByEntityAndCategoryAsync(long entityProfileID, string categoryName)
         {
             var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
+            var test = await repo.FindAsync(cp => cp.EntityProfileID == entityProfileID && cp.Category == categoryName);
+
             //return await repo.FindAsync(i => i.EntityProfileID == entityProfileID && i.Category!.Replace(" ", "").Contains(categoryName.Replace(" ","")) && i.IsAssigned);
-            return await repo.FindAsync(i => i.EntityProfileID == entityProfileID 
-                && i.Category!.Replace(" ", string.Empty).ToLower().Contains(categoryName.Replace(" ", string.Empty).ToLower()) 
+            return await repo.FindAsync(i => i.EntityProfileID == entityProfileID
+                && i.Category!.Replace(" ", string.Empty).ToLower().Contains(categoryName.Replace(" ", string.Empty).ToLower())
                 && i.IsAssigned);
+
         }
     }
 }
+
+

@@ -4,7 +4,7 @@ using CbsAp.Application.Shared.ResultPatten;
 
 namespace CbsAp.Application.Features.TaxCodesManagement.Queries.Lookups
 {
-    public record GetTaxCodesLookupQuery() 
+    public record GetTaxCodesLookupQuery(long entityId) 
         : IQuery<ResponseResult<IEnumerable< TaxCodeLookupDto>>>
     {
     }

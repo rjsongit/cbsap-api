@@ -16,6 +16,8 @@ namespace CbsAp.Application.Features.PO.Queries.POSearch
     string? Supplier,
     bool? IsActive,
     string? GoodReceipt,
+    bool? IsMatchable,
+    bool? IsDelivered,
     int pageNumber,
     int pageSize,
     string? sortField,

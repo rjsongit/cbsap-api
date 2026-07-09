@@ -6,6 +6,7 @@ namespace CbsAp.Application.Abstractions.Persistence
 {
     public interface IDimensionSetupRepository
     {
+        IQueryable<CbsAp.Domain.Entities.DimensionSetup.DimensionSetup> GetDimensionSetupAsQueryable();
         Task<DimensionSetupDto?> GetDimensionSetupByID(long dimensionSetupId);
         Task<PaginatedList<DimensionSetupListDto>> SearchDimensionSetupWithPagination(
             string? dimensionSetupName,
@@ -15,7 +16,6 @@ namespace CbsAp.Application.Abstractions.Persistence
             string? sortField,
             int? sortOrder,
             CancellationToken token);
-
         Task<IEnumerable<DimensionSetup>> GetDimensionByActiveAsync(CancellationToken token);
     }
 }

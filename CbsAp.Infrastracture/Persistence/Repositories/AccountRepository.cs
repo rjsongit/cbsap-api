@@ -108,7 +108,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
 
         public async Task<IEnumerable<Account>> GetAccountByEntityAndNameCodeAsync(CodingPermissionFilterDTO filter, CancellationToken token)
         {
-            var accounts= await _dbcontext.Accounts
+            var accounts = await _dbcontext.Accounts
                 .AsNoTracking()
                 .Where(d => d.EntityProfileID == filter.EntityProfileID
                     && (d.AccountID.ToString().Contains(filter.NameCode) || d.AccountName!.Contains(filter.NameCode)))

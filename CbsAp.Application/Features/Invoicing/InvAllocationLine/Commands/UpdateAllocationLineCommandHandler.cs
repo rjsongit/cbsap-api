@@ -2,6 +2,7 @@
 using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
+using CbsAp.Domain.Entities.Dimensions;
 using CbsAp.Domain.Entities.Invoicing;
 
 namespace CbsAp.Application.Features.Invoicing.InvAllocationLine.Commands
@@ -25,6 +26,39 @@ namespace CbsAp.Application.Features.Invoicing.InvAllocationLine.Commands
                 return ResponseResult<bool>.NotFound("Allocation Line not found.");
 
             }
+            //Need this for Entity Audit Logs to preserve the previous data
+            foreach (var dimension in invAllocLine.Dimensions)
+            {
+                var existedRecord = dto.Dimensions
+                    .FirstOrDefault(x => x.InvAllocLineDimensionID == dimension.InvAllocLineDimensionID);
+
+                if (existedRecord != null)
+                {
+                    dimension.DimensionKey = existedRecord.DimensionKey;
+                    dimension.DimensionValue = existedRecord.DimensionValue;
+                }
+            }
+
+            //get new items
+            var existingIds = invAllocLine.Dimensions.Select(d => d.InvAllocLineDimensionID).ToList();
+
+            var newItems = dto.Dimensions
+                .Where(x => !existingIds.Contains(x.InvAllocLineDimensionID))
+                .ToList();
+
+            foreach (var newItem in newItems)
+            {
+                invAllocLine.Dimensions.Add(new InvAllocLineDimension
+                {
+                    InvAllocLineID = invAllocLine.InvAllocLineID,
+                    DimensionKey = newItem.DimensionKey,
+                    DimensionValue = newItem.DimensionValue
+                });
+            }
+
+
+
+
             invAllocLine.InvAllocLineID = dto.InvAllocLineID;
             invAllocLine.InvoiceID = dto.InvoiceID;
             invAllocLine.LineNo = dto.LineNo;

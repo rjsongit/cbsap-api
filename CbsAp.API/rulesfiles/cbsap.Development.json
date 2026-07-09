@@ -173,18 +173,18 @@
       "targetQueue": "ExceptionQueue"
     },
     {
-       "type": "RoutingFlowLinkToSupplierRule",
-       "entityProfileIDField": "EntityProfileID",
-       "supplierKeyField": "SupplierInfoID",
-       "invRoutingFlowIDField": "InvRoutingFlowID",
-       "SupplierReferenceSourceKey": "SupplierInfos",
-       "EntityContextKey": "EntityProfile",
-       "RoutingFlowContextKey": "InvRoutingFlow",
-       "invoiceReferenceSourceKey": "InvoiceRecords",
-       "errorCode": "14",
-       "severity": "Error",
-       "nextStatus": "Exception",
-       "targetQueue": "ExceptionQueue"
+      "type": "RoutingFlowLinkToSupplierRule",
+      "entityProfileIDField": "EntityProfileID",
+      "supplierKeyField": "SupplierInfoID",
+      "invRoutingFlowIDField": "InvRoutingFlowID",
+      "SupplierReferenceSourceKey": "SupplierInfos",
+      "EntityContextKey": "EntityProfile",
+      "RoutingFlowContextKey": "InvRoutingFlow",
+      "invoiceReferenceSourceKey": "InvoiceRecords",
+      "errorCode": "14",
+      "severity": "Error",
+      "nextStatus": "Exception",
+      "targetQueue": "ExceptionQueue"
     },
     {
       "type": "RoutingFlowLinkToKeywordRule",
@@ -219,8 +219,17 @@
       "severity": "Error",
       "nextStatus": "Exception",
       "targetQueue": "ExceptionQueue"
+    },
+    {
+      "type": "PurchaseOrderLineRequiredFieldRule",
+      "field": "DimensionValue",
+      "errorMessage": "Missing {0}",
+      "errorCode": "08",
+      "severity": "Error",
+      "nextStatus": "Exception",
+      "targetQueue": "ExceptionQueue"
     }
-   
-     
+
+
   ]
 }

@@ -30,25 +30,39 @@ namespace CbsAp.Application.DTOs.Invoicing.Invoice
     public class ExportMyInvoiceDto : ExportInvoiceBaseDto
     {
         [Display(Order = 7)]
-        public string? NextRole { get; set; }
+        public string? ScanDate { get; set; }
+
         [Display(Order = 8)]
+        public string? NextRole { get; set; }
+        [Display(Order = 9)]
         public string? ExceptionReason { get; set; }
+
     }
 
     public class ExportRejectedInvoiceDto : ExportInvoiceBaseDto
     {
         [Display(Order = 7)]
+        public string? ScanDate { get; set; }
+
+        [Display(Order = 8)]
         public string? Reason { get; set; }
     }
 
     public class ExportExceptionInvoiceDto : ExportInvoiceBaseDto
     {
         [Display(Order = 7)]
+        public string? ScanDate { get; set; }
+
+        [Display(Order = 8)]
         public string? ExceptionReason { get; set; }
+
     }
 
     public class ExportArchiveInvoiceDto : ExportInvoiceBaseDto
     {
-       // public string? ExceptionReason { get; set; }
+        // public string? ExceptionReason { get; set; }
+        [Display(Order = 7)]
+        public string? ScanDate { get; set; }
+
     }
 }

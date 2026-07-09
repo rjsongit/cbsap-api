@@ -28,8 +28,9 @@ namespace CbsAp.Application.Features.PO.Queries.SearchPOLines
                  request.SupplierNo,
                  request.ExcludesMatchPOLineIds,
                  request.IsAvailableOrder,
+                 request.isDeliveredOrder,
                 // bool? IsAvailableOrder  TODO
-            
+
                 cancellationToken
                         );
 

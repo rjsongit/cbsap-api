@@ -116,6 +116,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                .FirstOrDefaultAsync(predicate);
         }
 
+
         public async Task<IQueryable<T>> FindAsync(Func<T, bool> condition)
         {
             var query = _dbcontext.Set<T>()
@@ -123,6 +124,7 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 .Where(condition)
                 .AsQueryable();
             return await Task.FromResult(query);
+
         }
     }
 }

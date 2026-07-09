@@ -29,6 +29,8 @@ namespace CbsAp.Application.Features.PO.Queries.POSearch
                 request.Supplier,
                 request.IsActive,
                 request.GoodReceipt,
+                request.IsMatchable,
+                request.IsDelivered,
                 request.pageNumber,
                 request.pageSize,
                 request.sortField,

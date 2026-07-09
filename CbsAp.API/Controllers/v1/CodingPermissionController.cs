@@ -30,6 +30,7 @@ namespace CbsAp.API.Controllers.v1
         {
             var query = new CodingPermissionCategoriesQuery();
             var result = await _mediator.Send(query);
+
             return CreateResponse(result);
         }
 
@@ -56,6 +57,7 @@ namespace CbsAp.API.Controllers.v1
             var result = await _mediator.Send(query);
             return CreateResponse(result);
         }
+
 
         [Authorize]
         [HttpPost("assign")]

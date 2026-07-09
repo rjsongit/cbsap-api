@@ -11,6 +11,7 @@ using CbsAp.Application.Features.Users.Commands.Common;
 using CbsAp.Application.Shared.Encryption;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Application.Shared.ResultPatten;
+using CbsAp.Domain.Entities.LayoutConfigs;
 using CbsAp.Domain.Entities.RoleManagement;
 using CbsAp.Domain.Entities.UserManagement;
 using CbsAp.Domain.Enums;
@@ -31,6 +32,7 @@ namespace CbsAp.Application.Features.Users.Commands.CreateNewUser
         private readonly IHasher _hasher;
         private readonly IPasswordGenerator _passwordGenerator;
         private readonly INotificationContext _notificationContext;
+        private readonly ILayoutConfigRepository _layoutConfigRepository;
 
         private readonly AppSettings _options;
 
@@ -41,6 +43,7 @@ namespace CbsAp.Application.Features.Users.Commands.CreateNewUser
             IHasher hasher,
             IPasswordGenerator passwordGenerator,
             INotificationContext notificationContext,
+            ILayoutConfigRepository layoutConfigRepository,
             IOptions<AppSettings> options
             )
         {
@@ -51,6 +54,7 @@ namespace CbsAp.Application.Features.Users.Commands.CreateNewUser
             _passwordGenerator = passwordGenerator;
             _notificationContext = notificationContext;
             _options = options.Value;
+            _layoutConfigRepository = layoutConfigRepository;
         }
 
         public async Task<ResponseResult<string>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -98,6 +102,48 @@ namespace CbsAp.Application.Features.Users.Commands.CreateNewUser
             {
                 return ResponseResult<string>.BadRequest("Error adding new user account");
             }
+            else
+            {
+                var layoutConfig = await _layoutConfigRepository.GetExistingUserConfig(request.userDTO.UserID);
+
+                var newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig();
+                
+            
+                if (layoutConfig != null)
+                {
+                    //update
+                    newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig
+                    {
+                        LayoutConfigId = layoutConfig.LayoutConfigId,
+                        Username = layoutConfig.Username,
+                        LayoutValue = request.userDTO.LayoutConfigValue ?? 0
+                    };
+                    newconfig.SetAuditFieldsOnUpdate(request.CreatedBy);
+
+                    await _unitOfWork.GetRepository<CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig>().UpdateAsync(newconfig.LayoutConfigId, newconfig);
+                    await _unitOfWork.SaveChanges(string.Empty, string.Empty, cancellationToken);
+                }
+                else
+                {
+                    //Add
+                    newconfig = new CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig
+                    {
+                        LayoutConfigId = 0,
+                        Username = request.userDTO.UserID,
+                        LayoutValue = request.userDTO.LayoutConfigValue ?? 0
+                    };
+
+                    newconfig.SetAuditFieldsOnCreate(request.CreatedBy);
+
+                    await _unitOfWork.GetRepository<CbsAp.Domain.Entities.LayoutConfigs.LayoutConfig>().AddAsync(newconfig);
+                    await _unitOfWork.SaveChanges(string.Empty, string.Empty, cancellationToken);
+                }
+
+
+         
+
+            }
+            
 
             //TODO : Generate or log email that failed to send
             var isEmailSent = await SendNewUserNotificationAsync(userAccount, generatedPassword);

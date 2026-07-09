@@ -21,5 +21,7 @@
         public List<long> userRoles { get; set; }
 
         public bool PasswordMandatory { get; set; } = false;
+
+        public int? LayoutConfigValue { get; set; }
     }
 }

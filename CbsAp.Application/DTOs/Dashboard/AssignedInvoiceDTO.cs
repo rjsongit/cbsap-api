@@ -12,5 +12,9 @@
         public string? AssignedRole { get; set; }
         public long? AssignedRoleId { get; set; }
 
+        public string ScanDate { get; set; }
+
+        public DateTimeOffset ScanDateSort { get; set; }
+
     }
 }

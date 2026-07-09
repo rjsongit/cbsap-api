@@ -88,7 +88,11 @@ namespace CBSAP.ValidationEngine.Core
                     case "InvoicePOValidationRule":
                         rules.Add(JsonSerializer.Deserialize<InvoicePOValidationRule>(item.GetRawText(), options)!);
                         break;
-                    
+
+                    case "PurchaseOrderLineRequiredFieldRule":
+                        rules.Add(JsonSerializer.Deserialize<PurchaseOrderLineRequiredFieldRule>(item.GetRawText(), options)!);
+                        break;
+
 
                 }
 
