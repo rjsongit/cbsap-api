@@ -27,7 +27,8 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             var existing = await repo.FirstOrDefaultAsync(cp
                     => cp.EntityProfileID == entity.EntityProfileID
                     && cp.Category == entity.Category
-                    && cp.NameCode == entity.NameCode);
+                    && cp.NameCode == entity.NameCode
+                    && cp.RoleID == entity.RoleID);
 
             if (existing != null)
             {
