@@ -142,7 +142,7 @@ namespace CbsAp.API.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> MyInvoiceSearchPage
         ([FromQuery] MyInvoiceSearchQuery paramQuery)
-       {
+        {
             int.TryParse(this.CurrentRole, out var roleId);
             paramQuery.RoleId = roleId;
             var result = await _mediator.Send(paramQuery);

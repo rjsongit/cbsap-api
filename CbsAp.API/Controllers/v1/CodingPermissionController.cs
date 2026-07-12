@@ -2,6 +2,7 @@
 using CbsAp.Application.DTOs.CodingPermission;
 using CbsAp.Application.Features.CodingPermission.Command;
 using CbsAp.Application.Features.CodingPermission.Queries;
+using CbsAp.Application.Features.Invoicing.InvActions.Queries.MyInvoiceSearch;
 using CbsAp.Application.Shared.ResultPatten;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -90,6 +91,16 @@ namespace CbsAp.API.Controllers.v1
         {
             var query = new CodingPermissionByEntityCategoryAndNameCodeQuery(filter);
             var result = await _mediator.Send(query);
+            return CreateResponse(result);
+        }
+
+        [HttpGet("assigned/paged")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAssignedPaged([FromQuery] CodingPermissionSearchQuery paramQuery)
+        {
+            var result = await _mediator.Send(paramQuery);
             return CreateResponse(result);
         }
     }

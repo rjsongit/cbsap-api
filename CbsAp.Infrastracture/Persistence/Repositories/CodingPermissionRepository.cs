@@ -1,7 +1,10 @@
 ﻿using CbsAp.Application.Abstractions.Persistence;
 using CbsAp.Application.DTOs.CodingPermission;
+using CbsAp.Application.Shared;
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Domain.Entities.CodingPermissions;
+using LinqKit;
+using Microsoft.EntityFrameworkCore;
 
 namespace CbsAp.Infrastracture.Persistence.Repositories
 {
@@ -68,6 +71,43 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 && i.RoleID == filter.RoleID
                 && i.Category!.Replace(" ", string.Empty).ToLower().Contains(filter.Category.Replace(" ", string.Empty).ToLower())
                 && i.IsAssigned);
+        }
+
+        public async Task<PaginatedList<CodingPermissionDTO>> GetByEntityCategoryRolePagedAsync(CodingPermissionSearchDTO search, CancellationToken token)
+        {
+            var repo = _unitofWork.GetRepository<CodingPermissionAssigned>();
+
+            ExpressionStarter<CodingPermissionAssigned> predicate = 
+                PredicateBuilder.New<CodingPermissionAssigned>(i => i.EntityProfileID == search.EntityProfileID 
+                    && i.Category!.Replace(" ", string.Empty).ToLower() == search.Category.Replace(" ", string.Empty).ToLower()
+                    && i.RoleID == search.RoleID
+                    && i.IsAssigned);
+
+            var query = repo.FindQueryAsync(predicate);
+           
+            var sortDictionary = new Dictionary<string, string>() {
+                { "entityProfileID", "entityProfileID" },
+                { "category", "category" },
+                { "nameCode", "nameCode" },
+              };
+
+            search.SortField = sortDictionary.ContainsKey(search.SortField ?? string.Empty)
+                            ? sortDictionary[search.SortField ?? string.Empty]
+                            : null;
+
+            if (string.IsNullOrEmpty(search.SortField))
+                query = query.OrderByDescending(p => p.LastUpdatedDate ?? p.CreatedDate);
+
+            var pagedList = await query.Select(i => new CodingPermissionDTO
+            {
+                ID = i.ID,
+                EntityProfileID = i.EntityProfileID,
+                Category = i.Category,
+                NameCode = i.NameCode
+            })
+            .ToListAsync();
+
+            return await pagedList.OrderByDynamic(search.SortField, search.SortOrder).ToPaginatedListAsync(search.PageNumber, search.PageSize, token);
         }
     }
 }

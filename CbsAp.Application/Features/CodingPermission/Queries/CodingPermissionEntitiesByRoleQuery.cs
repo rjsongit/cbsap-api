@@ -6,6 +6,5 @@ namespace CbsAp.Application.Features.CodingPermission.Queries
 {
     public record CodingPermissionEntitiesByRoleQuery(long RoleID)
         : IQuery<ResponseResult<IEnumerable<CodingPermissionEntityDTO>>>
-    {
-    }
+    { }
 }

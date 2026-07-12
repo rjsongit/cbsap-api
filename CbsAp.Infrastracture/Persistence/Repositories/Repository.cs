@@ -2,6 +2,7 @@
 using CbsAp.Application.Shared.Extensions;
 using CbsAp.Domain.Common;
 using CbsAp.Infrastracture.Contexts;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -123,6 +124,14 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
                 .Where(condition)
                 .AsQueryable();
             return await Task.FromResult(query);
+        }
+
+        public IQueryable<T> FindQueryAsync(Expression<Func<T, bool>> condition)
+        {
+            return _dbcontext.Set<T>()
+                .AsNoTracking()
+                .AsExpandable()
+                .Where(condition);
         }
     }
 }

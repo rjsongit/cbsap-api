@@ -34,7 +34,7 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
             }
             catch (Exception ex)
             {
-                return ResponseResult<IEnumerable<CodingPermissionEntityDTO>>.InternalServerError(ex.Message);
+                return ResponseResult<IEnumerable<CodingPermissionEntityDTO>>.InternalServerError($"An error occurred while processing the request: {ex.Message}");
             }
         }
     }

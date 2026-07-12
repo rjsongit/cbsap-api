@@ -35,5 +35,7 @@ namespace CbsAp.Application.Abstractions.Persistence
         Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
 
         Task<IQueryable<T>> FindAsync(Func<T, bool> condition);
+
+        IQueryable<T> FindQueryAsync(Expression<Func<T, bool>> condition);
     }
 }
