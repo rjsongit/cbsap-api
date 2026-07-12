@@ -18,27 +18,34 @@ namespace CbsAp.Application.Features.CodingPermission.Handlers
 
         public async Task<ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>> Handle(CodingPermissionCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var dimensionsSetup = await _dimensionSetupRepository.GetDimensionByActiveAsync(cancellationToken);
-            var result = dimensionsSetup.Select(i => new CodingPermissionCategoryDTO
+            try
             {
-                CategoryID = i.DimensionSetupId,
-                CategoryCode = i.DimensionSetupName,
-                CategoryName = i.DimensionSetupName,
-                EntityProfileID = 0
-            }).ToList();
+                var dimensionsSetup = await _dimensionSetupRepository.GetDimensionByActiveAsync(cancellationToken);
+                var result = dimensionsSetup.Select(i => new CodingPermissionCategoryDTO
+                {
+                    CategoryID = i.DimensionSetupId,
+                    CategoryCode = i.DimensionSetupName,
+                    CategoryName = i.DimensionSetupName,
+                    EntityProfileID = 0
+                }).ToList();
 
-            // add "account" manually
-            result.Add(new CodingPermissionCategoryDTO
+                // add "account" manually
+                result.Add(new CodingPermissionCategoryDTO
+                {
+                    CategoryID = 0,
+                    CategoryCode = "None",
+                    CategoryName = "Account",
+                    EntityProfileID = 0
+                });
+
+                return dimensionsSetup.Any()
+                    ? ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>.SuccessRetrieveRecords(result.OrderBy(i => i.CategoryID), "Coding Categories found")
+                    : ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>.OK("No data available");
+            }
+            catch (Exception ex)
             {
-                CategoryID = 0,
-                CategoryCode = "None",
-                CategoryName = "Account",
-                EntityProfileID = 0
-            });
-
-            return dimensionsSetup.Any()
-                ? ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>.SuccessRetrieveRecords(result.OrderBy(i => i.CategoryID), "Coding Categories found")
-                : ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>.NotFound("Coding Categories not found");
+                return ResponseResult<IEnumerable<CodingPermissionCategoryDTO>>.InternalServerError(ex.Message);
+            }
         }
     }
 }

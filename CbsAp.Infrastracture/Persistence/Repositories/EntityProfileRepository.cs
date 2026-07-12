@@ -186,5 +186,28 @@ namespace CbsAp.Infrastracture.Persistence.Repositories
             .OrderBy(x => x.EntityName)
             .ToListAsync();
         }
+
+        public async Task<List<GetAllEntityDto>> GetCodingEntitiesByRoleAsync(long roleID)
+        {
+            var assignedEntityIds = await _dbcontext.RoleEntities
+                .Where(x => x.RoleID == roleID)
+                .Select(x => x.EntityProfileID)
+                .ToListAsync();
+
+            IQueryable<EntityProfile> query = _dbcontext.EntityProfiles.AsNoTracking();
+
+            return assignedEntityIds.Any()
+                ? await query
+                    .Where(x => assignedEntityIds.Contains(x.EntityProfileID))
+                    .Select(x => new GetAllEntityDto
+                    {
+                        EntityProfileID = x.EntityProfileID,
+                        EntityCode = x.EntityCode,
+                        EntityName = x.EntityName
+                    })
+                    .OrderBy(x => x.EntityName)
+                    .ToListAsync()
+                : [];
+        }
     }
 }

@@ -37,5 +37,7 @@ namespace CbsAp.Application.Abstractions.Persistence
      );
 
         Task<List<GetAllEntityDto>> GetEntitiesByRoleAsync(long roleID);
+
+        Task<List<GetAllEntityDto>> GetCodingEntitiesByRoleAsync(long roleID);
     }
 }
