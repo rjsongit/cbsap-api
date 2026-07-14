@@ -135,8 +135,6 @@ namespace CbsAp.API.Controllers.v1
             return CreateResponse(result);
         }
 
-        
-
         [HttpGet("myInvoiceSearch/paged")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]

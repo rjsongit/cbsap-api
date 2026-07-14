@@ -48,7 +48,6 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Validate
         private async Task<InvValidationResponseDto> ValidateInvoiceAsync(long invoiceId, string updatedBy, CancellationToken cancellationToken)
         {
             var invoice = await _invoiceRepository.GetByIdWithDetailsAsync(invoiceId);
-
             if (invoice == null)
             {
                 return new InvValidationResponseDto
@@ -59,20 +58,29 @@ namespace CbsAp.Application.Features.Invoicing.InvActions.Command.Validate
                 };
             }
 
-            // 👉 call your existing validation pipeline (unchanged logic conceptually)
-            var result = await _invoiceRepository.ValidateInvoiceAsync(
-                invoice,
-                updatedBy,
-                _env.EnvironmentName,
-                cancellationToken
-            );
+            //// 👉 call your existing validation pipeline (unchanged logic conceptually)
+            //var result = await _invoiceRepository.ValidateInvoiceAsync(
+            //    invoice,
+            //    updatedBy,
+            //    _env.EnvironmentName,
+            //    cancellationToken
+            //);
+
+            var exceptions = invoice.InvoiceActivityLog!
+                    .Where(i => i.IsCurrentValidationContext == true)
+                    .Select(i => i.Reason)
+                    .Where(r => !string.IsNullOrWhiteSpace(r))
+                    .Distinct();
 
             return new InvValidationResponseDto
             {
                 QueueType = invoice.QueueType!.Value,
                 InvoiceActionType = "Validate",
-                FailureMessages = result.FailureMessages.Any()
-                    ? string.Join(";", result.FailureMessages)
+                //FailureMessages = result.FailureMessages.Any()
+                //    ? string.Join(";", result.FailureMessages)
+                //    : string.Empty
+                FailureMessages = exceptions.Any()
+                    ? string.Join(";", exceptions)
                     : string.Empty
             };
         }
